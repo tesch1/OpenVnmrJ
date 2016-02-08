@@ -30,7 +30,10 @@
 #  sconsJoption helps speed up the process. Typical value is #CPUs+1
 #
 
-ovjBuildDir=$HOME/vjbuild
+set -x
+
+ovjBuildDir=OVJ_BUILD
+ovjSrcDir=OVJ_SOURCE
 workspacedir=$ovjBuildDir
 OVJ_TOOLS=$ovjBuildDir/ovjTools
 
@@ -47,7 +50,8 @@ ovjAppName=OpenVnmrJ_1.1.app
 sconsJoption=2
 
 doGitClone=yes
-gitUSER=$USER@130.27.97.223/export/swrepos/git-repo
+#gitUSER=$USER@130.27.97.223/export/swrepos/git-repo
+gitUSER=git@github.com:tesch1/OpenVnmrJ.git
 doScons=yes
 buildOVJ=yes
 buildOVJMI=yes
@@ -55,8 +59,8 @@ buildOVJMI=yes
 # Potential optional set of values
 # doGitClone=rebuild
 # doGitClone=pull
-doGitClone=no
-# mail_list="dan.iverson@agilent.com"
+# doGitClone=no
+mail_list=""
 # gitUSER=dan@130.27.97.223/export/swrepos/git-repo
 # doScons=no
 # buildOVJ=no
@@ -70,7 +74,10 @@ then
    mkdir -p $ovjBuildDir/logs
 fi
 ovjLogFile=$ovjBuildDir/logs/makeovj.$date
-cd $ovjBuildDir
-export ovjBuildDir workspacedir OVJ_TOOLS dvdCopyDir1 dvdCopyDir2 dvdBuildName1 dvdBuildName2 dvdCopyName1 dvdCopyName2 ovjLogFile doScons doGitClone mail_list gitUSER ovjAppName buildOVJ buildOVJMI sconsJoption
-$ovjBuildDir/bin/makeovj > $ovjLogFile 2>&1
 
+cd $ovjBuildDir
+export ovjBuildDir ovjSrcDir workspacedir OVJ_TOOLS dvdCopyDir1 dvdCopyDir2 dvdBuildName1 dvdBuildName2 dvdCopyName1 dvdCopyName2 ovjLogFile doScons doGitClone mail_list gitUSER ovjAppName buildOVJ buildOVJMI sconsJoption
+
+$SHELL $ovjSrcDir/src/scripts/makeovj > $ovjLogFile 2>&1
+
+tail -f $ovjLogFile
