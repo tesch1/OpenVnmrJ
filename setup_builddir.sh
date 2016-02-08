@@ -4,6 +4,7 @@ set -xe
 
 ovjSrcDir=$HOME/src/OpenVnmrJ
 ovjBuildDir=$HOME/vjbuild
+ovjBuildDir=/tmp/vjbuild
 OVJ_TOOLS=$ovjBuildDir/ovjTools
 
 if [ -x $ovjBuildDir ] ; then
@@ -28,3 +29,4 @@ if [ x"$1" = x"build" ] ; then
     cd $ovjBuildDir
     ./buildovj
 fi
+

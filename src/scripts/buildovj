@@ -52,6 +52,7 @@ sconsJoption=2
 doGitClone=yes
 #gitUSER=$USER@130.27.97.223/export/swrepos/git-repo
 gitUSER=git@github.com:tesch1/OpenVnmrJ.git
+gitUSER=$ovjSrcDir
 doScons=yes
 buildOVJ=yes
 buildOVJMI=yes
@@ -68,7 +69,7 @@ mail_list=""
 # ovjAppName=OpenVnmrJ.app
 # sconsJoption=5
 
-date=`date +%F_%T`
+date=`date +%F_%Hh%M%S`
 if [ ! -d $ovjBuildDir/logs ]
 then
    mkdir -p $ovjBuildDir/logs
@@ -78,6 +79,6 @@ ovjLogFile=$ovjBuildDir/logs/makeovj.$date
 cd $ovjBuildDir
 export ovjBuildDir ovjSrcDir workspacedir OVJ_TOOLS dvdCopyDir1 dvdCopyDir2 dvdBuildName1 dvdBuildName2 dvdCopyName1 dvdCopyName2 ovjLogFile doScons doGitClone mail_list gitUSER ovjAppName buildOVJ buildOVJMI sconsJoption
 
-$SHELL $ovjSrcDir/src/scripts/makeovj > $ovjLogFile 2>&1
+$SHELL $ovjSrcDir/src/scripts/makeovj > $ovjLogFile 2>&1 &
 
 tail -f $ovjLogFile
