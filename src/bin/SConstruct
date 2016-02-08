@@ -21,7 +21,7 @@ SConscript('SConstruct.convertcmx')
 #
 
 #
-if ('darwin' not in platform):
+if ('darwin' not in platform and False ):
 # pulsetool uses motif but is still needed
     SConscript('SConstruct.pulsetool')
     SConscript('SConstruct.gshim')

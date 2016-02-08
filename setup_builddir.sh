@@ -18,6 +18,7 @@ if [ ! -x $ovjSrcDir/src/vnmr/vnmr.h ] ; then
 fi
 
 mkdir -p $OVJ_TOOLS
+ln -s `which javac` /tmp/vjbuild/ovjTools
 
 cp $ovjSrcDir/src/scripts/buildovj $ovjBuildDir/
 cp $ovjSrcDir/src/scripts/makeovj $ovjBuildDir/
