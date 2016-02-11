@@ -80,8 +80,8 @@ bld = Builder(action = os.path.join(cwd, os.pardir, 'bin', 'dps_ps_gen') + \
                        ' -DDPS -I$CPPPATH $SOURCE  \" \" 2')
 
 # append builder to both environments
-seqLibEnv.Append(BUILDERS = {'DpsPsGen' : bld})
-nvseqLibEnv.Append(BUILDERS = {'DpsPsGen' : nvbld})
+#seqLibEnv.Append(BUILDERS = {'DpsPsGen' : bld})
+#nvseqLibEnv.Append(BUILDERS = {'DpsPsGen' : nvbld})
 
 
 # nvseqlib build      

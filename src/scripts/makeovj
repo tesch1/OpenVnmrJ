@@ -52,6 +52,7 @@ then
     echo "===>>> $date Clone git-repo <<<==="
     #git clone ssh://$gitUSER git-repo
     git clone $gitUSER git-repo
+    git checkout oss-build
 # To build from a branch, uncomment the next three lines, altering branch as needed
 #   cd $buildDir/git-repo
 #   git branch --track VnmrJ_3.1 origin/VnmrJ_3.1
