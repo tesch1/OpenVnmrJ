@@ -31,6 +31,7 @@ os.makedirs(psglibPath)
 # actual builds
 
 for file in PsTargetList:
+        continue
         i,ext = os.path.splitext(file)
         seqLibEnv.DpsPsGen(target  =   i+'dps.c',
                              source  =   i+'.c')
