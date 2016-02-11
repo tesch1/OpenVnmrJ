@@ -81,6 +81,7 @@ termHandlerFileList   = ['termhandler.c']
 ptStandAloneFileList = ['errLogLib.c',
                         'ptalign.c']
 
+tclLib = 'tcl8.5'
 # build environment
 roboProcEnv = Environment(CCFLAGS    = '-O2 -m32',
                           CPPDEFINES = ['LINUX', 'DEBUG'],
@@ -106,7 +107,7 @@ roboproc = roboProcEnv.Program(target  = roboprocTarget,
                                           ncommPath,
                                           os.path.join(ovjtools, 'tcl', 'srcTcl'),
                                           os.path.join(os.sep, 'vnmr','lib')],
-                               LIBS    = ['tcl8.4', 'acqcomm','m'])
+                               LIBS    = [tclLib, 'acqcomm','m'])
 
 #
 # these linked preaction will cause reuqire headers and source to be symlinked 
@@ -132,7 +133,7 @@ gilscript = gilScriptEnv.Program(target  = 'Gilscript',
                                             ncommPath,
                                             os.path.join(ovjtools, 'tcl', 'srcTcl'),
                                             os.path.join(os.sep, 'vnmr','lib')],
-                                 LIBS    = ['tcl8.4', 'acqcomm','m'])
+                                 LIBS    = [tclLib, 'acqcomm','m'])
 
 gilAlignBuildList = []
 for i in multiBuildFileList:
@@ -145,7 +146,7 @@ gilalign = gilAlignEnv.Program(target  = 'gilalign',
                                LIBPATH = [cwd,
                                           os.path.join(ovjtools, 'tcl', 'srcTcl'),
                                           os.path.join(os.sep, 'vnmr','lib')],
-                               LIBS    = ['m','tcl8.4' ])
+                               LIBS    = ['m',tclLib ])
 
 nmsTermHandlerObj = roboProcEnv.StaticObject(target = termHandlerFileList[0] + 'nmsalign.o',
                                              source = termHandlerFileList[0])
@@ -156,7 +157,7 @@ nmsalign = roboProcEnv.Program(target  = 'nmsalign',
                                           os.path.join(cwd, os.pardir, 'ncomm'),
                                           os.path.join(ovjtools, 'tcl', 'srcTcl'),
                                           os.path.join(os.sep, 'vnmr','lib')],
-                               LIBS    = ['tcl8.4', 'acqcomm'])
+                               LIBS    = [tclLib, 'acqcomm'])
 
 ptTermHandlerObj = roboProcEnv.StaticObject(target = termHandlerFileList[0] + 'ptalign.o',
                                             source = termHandlerFileList[0])
@@ -167,7 +168,7 @@ ptalign = roboProcEnv.Program(target  = 'ptalign',
                                          os.path.join(cwd, os.pardir, 'ncomm'),
                                          os.path.join(ovjtools, 'tcl', 'srcTcl'),
                                          os.path.join(os.sep, 'vnmr','lib')],
-                              LIBS    = ['tcl8.4', 'acqcomm'])
+                              LIBS    = [tclLib, 'acqcomm'])
 
 # define with absolute path where built files will be copied
 vnmrInstallPath = os.path.join(cwd, os.pardir, os.pardir, os.pardir, 'vnmr', 'acqbin')
