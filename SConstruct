@@ -230,7 +230,7 @@ if ( os.path.exists(os.path.join('/usr','lib','libgsl.so')) or
 else:
    print "gsl library not found. Skipping compiles requiring that library"
 
-if ( 'darwin' not in platform):
+if ( 'darwin' not in platform and False):
    for i in acqBuildList:
       SConscript(os.path.join('src',i, 'SConstruct'))
 
