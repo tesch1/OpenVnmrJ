@@ -81,6 +81,7 @@ termHandlerFileList   = ['termhandler.c']
 ptStandAloneFileList = ['errLogLib.c',
                         'ptalign.c']
 
+tclLib = 'tcl8.4'
 tclLib = 'tcl8.5'
 # build environment
 roboProcEnv = Environment(CCFLAGS    = '-O2 -m32',

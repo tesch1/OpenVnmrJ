@@ -125,11 +125,11 @@ buildList = string.split("""
                          scripts
                          shuffler
                          solidspack
-                         stars
                          tcl
                          veripulse
                          vnmrbg
                          """);
+#                         stars
 
 acqBuildList = string.split("""
                          768AS
