@@ -96,18 +96,18 @@ dataPath = os.path.join(cwd, os.pardir, 'vnmr')
 dataFile = 'data.h'
 
 # build environments
-if (platform=="darwin"):
-     librPath = os.path.join(ovjtools, 'fftw_mac', 'fftw-3.1.2')
-else:
-     librPath = os.path.join(ovjtools, 'fftw', 'fftw-3.1.2')
-
-inclPath = os.path.join(ovjtools, 'fftw', 'fftw-3.1.2', 'api')
-
-env = Environment(CCFLAGS   = '-O2 -Wall -I' + inclPath,
-                  LINKFLAGS = '-Wl,-rpath,/vnmr/lib -L' + librPath)
-
-fftstatic=os.path.join(librPath,'libfftw3.a')
-libffts=File(fftstatic)
+#if (platform=="darwin"):
+#     librPath = os.path.join(ovjtools, 'fftw_mac', 'fftw-3.1.2')
+#else:
+#     librPath = os.path.join(ovjtools, 'fftw', 'fftw-3.1.2')
+#
+#inclPath = os.path.join(ovjtools, 'fftw', 'fftw-3.1.2', 'api')
+#
+env = Environment(CCFLAGS   = '-O2 -Wall ' ,
+                  LINKFLAGS = '-Wl,-rpath,/vnmr/lib ')
+#
+#fftstatic=os.path.join(librPath,'libfftw3.a')
+#libffts=File(fftstatic)
 
 # define with absolute path where built files will be copied
 optionsSensePath = os.path.join(cwd, os.pardir, os.pardir, os.pardir,
@@ -122,8 +122,8 @@ if not os.path.exists(optionsSensePath):
 # actual builds
 xreconBuildObj = env.Program(target = XreconTarget,
                              source = senseSrcFilesList + XreconSrcFilesList,
-                             LIBS   = [libffts, 'gsl', 'gslcblas', 'tiff', 'm'])
-                             
+                             LIBS   = ['fftw3', 'gsl', 'gslcblas', 'tiff', 'm'])
+
 # ireconBuildObj = env.SharedLibrary(target = IreconTarget,
 #                              source = senseSrcFilesList + IreconSrcFilesList,
 #                              LIBS   = ['gsl', 'gslcblas', 'fftw3', 'tiff', 'm'])
