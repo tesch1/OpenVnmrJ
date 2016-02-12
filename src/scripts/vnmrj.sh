@@ -23,7 +23,7 @@
 #    laf can be metal, motif or gtk
 #    theme can be default, ocean, aqua or emerald
 #
-
+set -x
 if [ x$vnmrsystem = "x" ]
 then
    vnmrsystem=/vnmr
@@ -67,8 +67,8 @@ then
     itype="adm"
     if [ $USER != $admin ]
     then
-       echo "Switching to administrator $admin and starting vnmrj adm"
-       su - $admin -c "vnmrj adm"
+       echo "Switching to administrator '$admin' and starting vnmrj adm"
+       su - $admin -c "$vnmrsystem/bin/vnmrj adm"
        exit
     fi
     laf="metal"
@@ -173,11 +173,12 @@ sysdir=$vnmrsystem
 userdir=$vnmruser
 shtoolcmd="/bin/sh"
 shtooloption="-c"
-javabin="$vnmrsystem/jre/bin/java"
 
-if [ x$ostype = "xDarwin" ]
+if [ x$ostype = "xDarwin" -o true ]
 then
-   javabin="java"
+    javabin="java"
+else
+    javabin="$vnmrsystem/jre/bin/java"
 fi
 
 # Set the "MultiClickTime"

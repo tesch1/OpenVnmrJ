@@ -34,8 +34,10 @@ env = Environment()
 
 # paths
 if ( 'linux' in platform):
-   javaBinPath = os.path.join(ovjtools, 'java', 'bin')
-   jarBin = os.path.join(javaBinPath, 'jar')
+   #javaBinPath = os.path.join(ovjtools, 'java', 'bin')
+   #jarBin = os.path.join(javaBinPath, 'jar')
+   javaBinPath = '/usr/bin' 
+   jarBin = 'jar'
 elif ( 'darwin' in platform):
    javaBinPath = os.path.join('/', 'usr', 'bin')
    jarBin = os.path.join(javaBinPath, 'jar')

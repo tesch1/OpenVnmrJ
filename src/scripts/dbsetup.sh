@@ -243,7 +243,8 @@ makeadminfiles()
     done
 
     osname=`uname -s`
-    vnmrdir="/vnmr"
+    #vnmrdir="/vnmr"
+    vnmrdir="$vnmrsystem"
     vnmrsysdir="$vnmrdir"
     user_dir="$4"
     slash="/"
@@ -966,7 +967,7 @@ if [ "x$vnmrsystem" = "x" ]
 then
    vnmrsystem="/vnmr"
 fi
-vnmr_adm=`"$vnmrsystem"/bin/fileowner /vnmr/vnmrrev`
+vnmr_adm=`"$vnmrsystem"/bin/fileowner $vnmrsystem/vnmrrev`
 nmrnetdb="/usr/varian/config/NMR_NETWORK_DB"
 osname=`uname -s`
 rootuser="root"
@@ -1089,13 +1090,13 @@ then
         sudo rm -f $file 
     done 
     # Use our launch file
-    sudo cp /vnmr/bin/com.edb.launchd.postgresql.plist /Library/LaunchDaemons 
+    sudo cp $vnmrsystem/bin/com.edb.launchd.postgresql.plist /Library/LaunchDaemons 
 
-    if [ ! -d /vnmr/pgsql ]; then 
-        mkdir /vnmr/pgsql
-        chown $vnmr_adm /vnmr/pgsql 
+    if [ ! -d $vnmrsystem/pgsql ]; then 
+        mkdir $vnmrsystem/pgsql
+        chown $vnmr_adm $vnmrsystem/pgsql 
     fi
-    cd /vnmr/pgsql 
+    cd $vnmrsystem/pgsql 
     if [ -d bin ]; then 
         if [ ! -d bin.sav ]; then
             mv bin bin.sav 

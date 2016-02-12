@@ -100,7 +100,6 @@ propFileList = string.split("""
                             Labels_zh_CN.properties
                             """)
 
-
 ThirdPartyJarPath = os.path.join(ovjtools, 'JavaPackages')
 ThirdPartyList = ['jmol.jar']
 
@@ -131,8 +130,10 @@ classPath = cwd
 
 
 if (platform=="linux2"):
-   javaBinDir = os.path.join(ovjtools, 'java', 'bin')
-   jarBin = os.path.join(javaBinDir, 'jar')
+   #javaBinDir = os.path.join(ovjtools, 'java', 'bin')
+   #jarBin = os.path.join(javaBinDir, 'jar')
+   javaBinDir = '/usr/bin' 
+   jarBin = 'jar'
 elif (platform=="darwin"):
    javaBinDir = os.path.join('/', 'usr', 'bin')
    jarBin = os.path.join(javaBinDir, 'jar')
@@ -164,7 +165,7 @@ def copyFilesHere(path, fileList):
       shutil.copy(os.path.join(path, i), i)
 
 # copy jmol.jar to local directory
-copyFilesHere(ThirdPartyJarPath, ThirdPartyList)
+#copyFilesHere(ThirdPartyJarPath, ThirdPartyList)
 
 
 # actions to perform at interpretation time
@@ -182,10 +183,11 @@ Execute('rm -rf ' + os.path.join(classesPath, 'vnmr') + '; ' + \
 
 # define vjmol environment
 vjmolPath = os.path.join(cwd, 'vjmol')
-if ((platform!="darwin") and ('interix' not in platform) ):
-   vjmolEnv  = Environment(ENV = {'JAVA_HOME' : javaBinDir,
-                               'CLASSPATH' : os.path.join(cwd, 'jmol.jar'),
-                               'PATH' : javaBinDir + ':' + os.environ['PATH']})
+if ((platform!="darwin") and ('interix' not in platform)):
+   if False:
+       vjmolEnv  = Environment(ENV = {'JAVA_HOME' : javaBinDir,
+                                      'CLASSPATH' : os.path.join(cwd, 'jmol.jar'),
+                                      'PATH' : javaBinDir + ':' + os.environ['PATH']})
 
 # define build environment
    jEnv = Environment(ENV = {'JAVA_HOME' : javaBinDir,
@@ -238,15 +240,15 @@ if ( 'interix' not in platform):
   jEnv.Execute('which javac')
 
 # actual VJMol.jar build
-javaBuildVJMol = vjmolEnv.Java(source = os.path.join(cwd, 'vjmol_src'),
-              target = vjmolPath)
+#javaBuildVJMol = vjmolEnv.Java(source = os.path.join(cwd, 'vjmol_src'),
+#              target = vjmolPath)
 
 findAction = 'find ' + os.path.join(cwd,'classes') + ' \( -name "*.java" -o -name "*.out" \) -exec rm -f {} \;'
 
 # print findAction
-jEnv.AddPostAction(javaBuildVJMol,
-                   Action(findAction))
-if ( 'interix' not in platform):
+#jEnv.AddPostAction(javaBuildVJMol,
+#                   Action(findAction))
+if ( 'interix' not in platform and False):
   vjmolBuildObject = vjmolEnv.Jar(JAR      = jarBin,
                                 source   = vjmolPath,
                                 target   = vjmolTarget,
@@ -322,8 +324,10 @@ else:
 
 # finally copy vjmol.jar
 if ( 'interix' not in platform):
-  vjmolEnv.AddPostAction(vjmolBuildObject,
-                   Action(Copy(installPath, os.path.join(cwd, vjmolTarget))))
+    # or not.
+    if False:
+        vjmolEnv.AddPostAction(vjmolBuildObject,
+                               Action(Copy(installPath, os.path.join(cwd, vjmolTarget))))
 else:
   for i in JSmoothFileList:
     jEnv.AddPostAction(jarBuildObject,

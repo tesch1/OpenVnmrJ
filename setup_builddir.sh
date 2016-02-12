@@ -19,6 +19,7 @@ fi
 
 mkdir -p $OVJ_TOOLS
 ln -s `which javac` $OVJ_TOOLS/
+ln -s `which java` $OVJ_TOOLS/
 
 cp $ovjSrcDir/src/scripts/buildovj $ovjBuildDir/
 cp $ovjSrcDir/src/scripts/makeovj $ovjBuildDir/
@@ -29,5 +30,9 @@ sed -ie "s|OVJ_SOURCE|$ovjSrcDir|" $ovjBuildDir/buildovj
 if [ x"$1" = x"build" ] ; then
     cd $ovjBuildDir
     ./buildovj
+
+    export vnmrsystem=$ovjBuildDir/vnmr
+    $vnmrsystem/bin/dbsetup
+    $vnmrsystem/bin/makeuser
 fi
 

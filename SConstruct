@@ -184,9 +184,9 @@ javaBuildList = string.split("""
                              admin
                              jplot
                              managedb
-                             vjmol
                              vnmrj
                              """);
+#                             vjmol
 
 javaAcqBuildList = string.split("""
                              apt

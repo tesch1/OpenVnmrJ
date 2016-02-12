@@ -1,8 +1,9 @@
-#!/bin/ksh
+#!/bin/bash
 
 # This script is ONLY for interix.  It is to create some of the admin
 # files that are normally done when a user is created.
-
+set -x
+set -e
 #default vnmrsystem to /vnmr if undefined
 if [ x"$vnmrsystem" = "x" ]
 then
@@ -14,7 +15,7 @@ gethomedirInterix()
     home_dir=""
     if [ "x$osname" = "xInterix" ]
     then
-	home_dir=`/vnmr/bin/getuserinfo $1 | awk 'BEGIN { FS = ";" } {print $2}'`
+	home_dir=`$vnmrsystem/bin/getuserinfo $1 | awk 'BEGIN { FS = ";" } {print $2}'`
         echo "gethomedirInterix:  home_dir - $home_dir"
 #	home_dir=`$home_dir | sed -e 's@\\\\@\\\\\\\\@g'`
     fi
@@ -102,6 +103,7 @@ makeadmfiles()
 
     osname=`uname -s`
     vnmrdir="/vnmr"
+    vnmrdir="$vnmrsystem"
     vnmrsysdir="$vnmrdir"
     user_dir="$4"
     slash="/"
@@ -139,7 +141,8 @@ makeadmfiles()
 	    echo "name     System Administrator" >> "$file"
 	fi
         # echo fails if path has some backslash characters, use print -R
-        print -R "home     $3" >> "$file"
+        echo -E "home     $3" >> "$file"
+        #print -R "home     $3" >> "$file"
 	if [ "x$osname" = "xInterix" ]
 	then
 	    if [ "x$2" != "xdb" ]
@@ -368,7 +371,7 @@ makechoicefiles()
 # main, Main, MAIN
 ########################################################################################
 
-vnmr_adm=`"$vnmrsystem"/bin/fileowner /vnmr/vnmrrev`
+vnmr_adm=`"$vnmrsystem"/bin/fileowner $vnmrsystem/vnmrrev`
 osname=`uname -s`
 if [ "x$osname" = "xDarwin" ]
 then

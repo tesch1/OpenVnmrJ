@@ -14,9 +14,20 @@
 #  dbinstall script - install database   #
 ##########################################
 
+if [ x$vnmrsystem = "x" ]
+then
+   vnmrsystem=/vnmr
+fi
+
+if test ! -d "$vnmrsystem"
+then
+    echo "$0 $vnmrsystem does not exist, cannot proceed."
+    exit
+fi
+
 # vnmradmuser="vnmr1"
 # vnmradmuser=` ls -l /vnmr/pgsql | grep data | grep -v grep | awk '{ print $3 }' `
-vnmradmuser=` ls -l /vnmr/bin/Vnmrbg | awk '{ print $3 }' `
+vnmradmuser=` ls -l $vnmrsystem/bin/Vnmrbg | awk '{ print $3 }' `
 if [ $USER != "$vnmradmuser" ]
 then
     echo "You must do 'su - $vnmradmuser' or login as $vnmradmuser to execute this command."
@@ -137,8 +148,8 @@ then
 fi
 echo " "
 
-$vnmrsystem/bin/managedb filldb /vnmr/fidlib $vnmradmuser
-$vnmrsystem/bin/managedb filldb /vnmr/user_templates/layout/etc $vnmradmuser
+$vnmrsystem/bin/managedb filldb $vnmrsystem/fidlib $vnmradmuser
+$vnmrsystem/bin/managedb filldb $vnmrsystem/user_templates/layout/etc $vnmradmuser
 # To add other directories to the database, substitute
 # $vnmrsystem/fidlib in the above command.  
 

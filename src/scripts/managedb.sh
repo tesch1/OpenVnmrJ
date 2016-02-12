@@ -86,6 +86,7 @@ set shtooloption="-c"
 set sfudir=""
 set sfudir_interix=""
 set javacmd="$vnmrsystem/jre/bin/java"
+set javacmd="java"
 set vjclasspath="$vnmrsystem/java/managedb.jar"
 set sysdir="$vnmrsystem"
 if ( x$ostype == "xInterix" ) then

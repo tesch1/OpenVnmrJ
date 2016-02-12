@@ -32,7 +32,7 @@ if not os.path.exists(boFile):
 execfile(boFile)
 
 # paths
-if (platform!="darwin"):
+if (platform!="darwin" and False):
    javaPath = os.path.join(ovjtools, 'java', 'bin')
 else:
    javaPath = os.path.join('/', 'usr', 'bin')
@@ -99,6 +99,7 @@ if not os.path.exists(classesPath):
    os.makedirs(classesPath)
 
 jarBin = os.path.join(javaPath, 'jar')
+jarBin = 'jar'
 
 for i in ThirdPartyJarList:
    Execute('cp ' + os.path.join(ThirdPartyJarPath, i) + ' .')

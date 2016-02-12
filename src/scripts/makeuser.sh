@@ -153,7 +153,7 @@ get_homedir() {
     if [ "x$ostype" = "xInterix" ]
     then
         home_dir=""
-	home_dir=`/vnmr/bin/getuserinfo $1 | awk 'BEGIN { FS = ";" } {print $2}'`
+	home_dir=`$vnmrsystem/bin/getuserinfo $1 | awk 'BEGIN { FS = ";" } {print $2}'`
         /bin/winpath2unix $home_dir
     else
        csh -f 2>/dev/null << ++
@@ -246,7 +246,7 @@ run_updaterev () {
 if (test x$vnmrsystem = "x")
 then
    vnmrsystem="/vnmr"
-   . /vnmr/user_templates/.vnmrenvsh
+   . $vnmrsystem/user_templates/.vnmrenvsh
 fi
 set_system_stuff
 curr_user=`id | sed -e 's/[^(]*[(]\([^)]*\)[)].*/\1/'`
@@ -285,7 +285,7 @@ then
   elif [ x$lflvr != "xdebian" ]
   then
       # the carrage return is for the remote display question 
-      su - $user_name -c "/vnmr/bin/Vnmrbg -mback -n1 'setappmode'" <<+
+      su - $user_name -c "$vnmrsystem/bin/Vnmrbg -mback -n1 'setappmode'" <<+
 
 +
   else
@@ -304,7 +304,7 @@ then
       # 
       # this hack works, until sudo 1.7 is standard  GMB  5/06/2009   
       #
-      sudo su - $user_name -s /bin/bash -c "/vnmr/bin/Vnmrbg -mback -n1 setappmode"
+      sudo su - $user_name -s /bin/bash -c "$vnmrsystem/bin/Vnmrbg -mback -n1 setappmode"
   fi
   exit 0
 fi
@@ -373,7 +373,7 @@ else  #current user is root
     then
        if test $# -eq 2
        then
-          su - $1 -c "/vnmr/bin/makeuser $1 $2"
+          su - $1 -c "$vnmrsystem/bin/makeuser $1 $2"
        else
           echo "Cannot run makeuser as root"
        fi
@@ -541,11 +541,11 @@ else  #current user is root
           sudo chmod 755 "$nmr_home/$nmr_adm"
           # we give a temp default password,  use the --expire option to force to user to change password on login
           sudo /usr/bin/passwd --expire $name_add 2>/dev/null
-          sudo /vnmr/bin/setupbashenv $dir_name/$name_add
+          sudo $vnmrsystem/bin/setupbashenv $dir_name/$name_add
        fi
 	elif [ x$ostype = "xInterix" ]
 	then
-	    /vnmr/bin/useradd -d "$dir_name"/$name_add -g $nmr_group $name_add
+	    $vnmrsystem/bin/useradd -d "$dir_name"/$name_add -g $nmr_group $name_add
 	    #chown -R $name_add:$nmr_group "$dir_name"/$name_add 
         else
             /bin/cp /etc/passwd /etc/passwd.bk
@@ -695,14 +695,14 @@ else  #current user is root
 	chmod 666 "$cur_homedir"/.vnmrsilent
 	if [ x$user_update = "xy" -a x$ostype != "xInterix" ]
 	then
-	    if test -s "$cur_homedir"/.login
-	    then
-		mv "$cur_homedir"/.login "$cur_homedir"/.login.bkup.$date
-		echo "  .login backed up in .login.bkup.$date";
-	    fi
-	    /bin/cp "$vnmrsystem"/user_templates/.login "$cur_homedir"/.login
-            chown $name_add:$nmr_group "$cur_homedir"/.login
-	    echo "  .login updated from templates."
+	    #if test -s "$cur_homedir"/.login
+	    #then
+	    # mv "$cur_homedir"/.login "$cur_homedir"/.login.bkup.$date
+	    #    echo "  .login backed up in .login.bkup.$date";
+	    #fi
+	    #/bin/cp "$vnmrsystem"/user_templates/.login "$cur_homedir"/.login
+            #chown $name_add:$nmr_group "$cur_homedir"/.login
+	    #echo "  .login updated from templates."
 
             if [ x$ostype = "xLinux" ]
             then
@@ -726,7 +726,7 @@ else  #current user is root
 	fi
 	if [ x$ostype != "xInterix" ] 
 	then 
-	    su - $name_add -c "/vnmr/bin/makeuser $1 '$cur_homedir' $nmr_group $user_update '$vnmrsystem'" << +++
+	    su - $name_add -c "$vnmrsystem/bin/makeuser $1 '$cur_homedir' $nmr_group $user_update '$vnmrsystem'" << +++
 
 +++
 	    exit
@@ -1379,9 +1379,9 @@ then
       echo "Updating CDE"
       if test $as_root = "y"
       then
-         su $name_add -c "tar xf /vnmr/user_templates/$file"
+         su $name_add -c "tar xf $vnmrsystem/user_templates/$file"
       else
-         tar xf /vnmr/user_templates/$file
+         tar xf $vnmrsystem/user_templates/$file
       fi
       cd .dt/
       rm -f sessions/sessionexit sessions/sessionetc
