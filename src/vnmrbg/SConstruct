@@ -12,7 +12,7 @@ platform = sys.platform
 opensource = "false"
 gplsource  = "false"
 opensource = "true"
-# gplsource  = "true"
+gplsource  = "true"
 
 # targets to build
 vnmrbgTarget = 'Vnmrbg'
