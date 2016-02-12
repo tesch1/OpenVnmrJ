@@ -4,7 +4,7 @@ import sys
 
 platform = sys.platform
 
-if ( 'darwin' not in platform):
+if ( 'darwin' not in platform and False):
     SConscript('SConstruct.vnmrwish')
 # SConscript('SConstruct.gilson')
 # SConscript('SConstruct.spincad')
