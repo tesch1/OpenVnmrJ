@@ -27,7 +27,7 @@ if not os.path.exists(standardBiosolidPath) :
 for i in biosolidDirList:
        myShutil.copytree(i,standardBiosolidPath,symlinks = False)
 
-os.system('chmod 644 ' + standardBiosolidPath + '/maclib/*')
-os.system('chmod 644 ' + standardBiosolidPath + '/manual/*')
-os.system('chmod 644 ' + standardBiosolidPath + '/templates/layout/*/*')
-os.system('chmod 644 ' + standardBiosolidPath + '/templates/vnmrj/protocols/*')
+#os.system('chmod 644 ' + standardBiosolidPath + '/maclib/*')
+#os.system('chmod 644 ' + standardBiosolidPath + '/manual/*')
+#os.system('chmod 644 ' + standardBiosolidPath + '/templates/layout/*/*')
+#os.system('chmod 644 ' + standardBiosolidPath + '/templates/vnmrj/protocols/*')
