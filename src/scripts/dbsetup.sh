@@ -1366,7 +1366,7 @@ else
             rm -f $my_file
             echo ""
             echo "User \"$login_user\" doesn't have permission to write to $vnmrsystem/pgsql directory."
-            echo ""
+            echo " $my_file"
             echo "Exiting $0 ............."
             echo ""
             exit 1

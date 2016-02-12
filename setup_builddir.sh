@@ -32,6 +32,7 @@ if [ x"$1" = x"build" ] ; then
     ./buildovj
 
     export vnmrsystem=$ovjBuildDir/vnmr
+    mkdir $vnmrsystem/pgsql
     $vnmrsystem/bin/dbsetup
     $vnmrsystem/bin/makeuser
 fi
