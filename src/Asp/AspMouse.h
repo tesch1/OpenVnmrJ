@@ -1,3 +1,4 @@
+/*-*- Mode: C++ -*-*/
 /*
  * Copyright (C) 2015  University of Oregon
  *
@@ -6,7 +7,6 @@
  *
  * For more information, see the LICENSE file.
  */
-/*-*- Mode: C++ -*-*/
 
 #ifndef ASPMOUSE_H
 #define ASPMOUSE_H
