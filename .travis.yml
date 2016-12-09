@@ -1,0 +1,66 @@
+language: java
+compiler:
+  - gcc
+
+git:
+  depth: 3
+
+sudo: required
+dist: trusty
+
+os:
+  - linux
+  - osx
+
+osx_image: xcode7.3
+
+cache: ccache
+
+#jdk:
+#  - openjdk6
+
+addons:
+  apt:
+    sources:
+    - r-packages-trusty
+    packages:
+    - scons
+    - fort77
+    - libglu1-mesa-dev
+    - lib32stdc++-4.8-dev
+    - libc6-dev-i386
+    - gcc-multilib
+
+before_install:
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source ./scripts/install_macports.sh ; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo port install scons ; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons gcc ; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then jdk_switcher use openjdk6; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg --add-architecture i386; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get -qq update; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libmotif-dev:i386 ; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libxt-dev:i386 ; fi
+  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libx11-dev:i386 ; fi
+  - java -version
+
+install:
+  - pwd
+  - cd ..
+  - git config --global core.pager '' # disable git paging
+  - GITHUB_USER=`dirname ${TRAVIS_REPO_SLUG}`
+  - git clone https://github.com/${GITHUB_USER}/ovjTools.git --branch development
+
+script: 
+  - export OVJ_BUILDDIR=`pwd`
+  - export OVJ_ROOT=${OVJ_BUILDDIR}/OpenVnmrJ
+  - export OVJ_TOOLS=${OVJ_BUILDDIR}/ovjTools
+  - cd ${OVJ_ROOT}
+  - cp -a ${OVJ_TOOLS}/bin ${OVJ_BUILDDIR}
+  - cd ${OVJ_BUILDDIR}/bin && ./build_release.sh build package 
+
+after_failure:
+  - cd ${OVJ_ROOT}
+  - find ${OVJ_ROOT} -name build.log
+  - find . -name 'build*' -exec tail -100 {} \;
