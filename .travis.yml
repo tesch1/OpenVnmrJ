@@ -78,7 +78,3 @@ deploy:
     repo:
     - OpenVnmrJ/OpenVnmrJ
     - tesch1/OpenVnmrJ
-    branch:
-    - travis-ci
-    - development
-    - master
