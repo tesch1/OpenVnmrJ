@@ -1,23 +1,25 @@
 language: java
+
 compiler:
-  - gcc
+- gcc
 
 git:
   depth: 3
 
 sudo: required
+
 dist: trusty
 
 os:
-  - linux
-  - osx
+- linux
+- osx
 
 osx_image: xcode7.3
 
-cache: ccache
-
 #jdk:
-#  - openjdk6
+#- openjdk6
+
+cache: ccache
 
 addons:
   apt:
@@ -32,35 +34,50 @@ addons:
     - gcc-multilib
 
 before_install:
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source ./scripts/install_macports.sh ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo port install scons ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons gcc ; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then jdk_switcher use openjdk6; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg --add-architecture i386; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get -qq update; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libmotif-dev:i386 ; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libxt-dev:i386 ; fi
-  - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libx11-dev:i386 ; fi
-  - java -version
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons gcc ; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then jdk_switcher use openjdk6; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg --add-architecture i386; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get -qq update; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libmotif-dev:i386 ; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libxt-dev:i386 ; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get install -y libx11-dev:i386 ; fi
+- java -version
 
 install:
-  - pwd
-  - cd ..
-  - git config --global core.pager '' # disable git paging
-  - GITHUB_USER=`dirname ${TRAVIS_REPO_SLUG}`
-  - git clone https://github.com/${GITHUB_USER}/ovjTools.git --branch development
+- pwd
+- cd ..
+- git config --global core.pager ''
+- GITHUB_USER=`dirname ${TRAVIS_REPO_SLUG}`
+- git clone https://github.com/${GITHUB_USER}/ovjTools.git --branch development
 
-script: 
-  - export OVJ_BUILDDIR=`pwd`
-  - export OVJ_ROOT=${OVJ_BUILDDIR}/OpenVnmrJ
-  - export OVJ_TOOLS=${OVJ_BUILDDIR}/ovjTools
-  - cd ${OVJ_ROOT}
-  - cp -a ${OVJ_TOOLS}/bin ${OVJ_BUILDDIR}
-  - cd ${OVJ_BUILDDIR}/bin && ./build_release.sh build package 
+script:
+- export OVJ_BUILDDIR=$(pwd)
+- export OVJ_ROOT=${OVJ_BUILDDIR}/OpenVnmrJ
+- export OVJ_TOOLS=${OVJ_BUILDDIR}/ovjTools
+- cd ${OVJ_ROOT}
+- cp -a ${OVJ_TOOLS}/bin ${OVJ_BUILDDIR}
+- cd ${OVJ_BUILDDIR}/bin && ./build_release.sh build package
 
 after_failure:
-  - cd ${OVJ_ROOT}
-  - find ${OVJ_ROOT} -name build.log
-  - find . -name 'build*' -exec tail -100 {} \;
+- cd ${OVJ_ROOT}
+- find ${OVJ_ROOT} -name build.log
+- find . -name 'build*' -exec tail -100 {} \;
+
+before_deploy:
+- cd ${OVJ_TOOLS} && tar czf OpenVnmrJ_${TRAVIS_TAG}.tgz dvdimage*
+
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: moZsGzDeQkqsEROCzN0HE+Obmt813bNt9nOX1jNtuJP3giz31w8xBwyu2sf6nea7tN5IopUlWIg5AF9UhvcHLyXYEZRwsvyZNmkn9s7fg8CFtRZekS5fU8+UbNMay2qgXeSe7LbwpQYYhibcG685BPs4ifAgey40JknUCXnTeXeSOrkEZ/zbSNwzpHKFr+MXolhS0j05izhNlF6Haf2SE/BJzyZOdxpiC6JaXhedzMyaHRBBsKS4ZHl1ByVtpAO3L5n7D8q2DKsK7fvrKWNGCpXezzdjxAIwT9niM/DJ0nDMa2rUBBP5+GbC18WKn30q7pRKgtbU6pBig99qFp/MomoOcZTp/MFQld/fX66YQCeU8FIGQdKs9kV17NOnVW4pf6OBL5FD17qed5nS72xWdAkuT+j4e2bDXWjRCqt5MVz3w62ZrJvTeC5LS4buCINWcsT8AY9lMtF39NHtn54Yx6at+YFrOFafLuJS80X+yJGsPsLgKOjow+ImYppZ9EltEeWj1sy61ny0lHPFggU6rp+dGV5Kc6bQV+WzT8Lhb/4gZ5xgSxFLrMC+7VxK2fbtggO/dW3xeYkGMSUR6/eZhB6n9mwE9OUw9yNUT/7NKE970obwHaWhb/AnobAO4H6FjBMJQOxFFs/TNJjaFg1stEhJPlcVA/QsRQoNl0K11Ig=
+  file: OpenVnmrJ_${TRAVIS_TAG}.tgz
+  on:
+    tags: true
+    repo:
+    - OpenVnmrJ/OpenVnmrJ
+    - tesch1/OpenVnmrJ
+    branch:
+    - travis-ci
+    - development
+    - master
