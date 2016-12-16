@@ -64,14 +64,15 @@ after_failure:
 - find . -name 'build*' -exec tail -100 {} \;
 
 before_deploy:
-- cd ${OVJ_TOOLS} && tar czf OpenVnmrJ_${TRAVIS_TAG}.tgz dvdimage*
+- export RELEASE_PKG_FILE=${OVJ_BUILDDIR}/OpenVnmrJ_${TRAVIS_TAG}.tgz
+- cd ${OVJ_BUILDDIR} && tar czf ${RELEASE_PKG_FILE} dvdimage*
 
 deploy:
   skip_cleanup: true
   provider: releases
   api_key:
     secure: moZsGzDeQkqsEROCzN0HE+Obmt813bNt9nOX1jNtuJP3giz31w8xBwyu2sf6nea7tN5IopUlWIg5AF9UhvcHLyXYEZRwsvyZNmkn9s7fg8CFtRZekS5fU8+UbNMay2qgXeSe7LbwpQYYhibcG685BPs4ifAgey40JknUCXnTeXeSOrkEZ/zbSNwzpHKFr+MXolhS0j05izhNlF6Haf2SE/BJzyZOdxpiC6JaXhedzMyaHRBBsKS4ZHl1ByVtpAO3L5n7D8q2DKsK7fvrKWNGCpXezzdjxAIwT9niM/DJ0nDMa2rUBBP5+GbC18WKn30q7pRKgtbU6pBig99qFp/MomoOcZTp/MFQld/fX66YQCeU8FIGQdKs9kV17NOnVW4pf6OBL5FD17qed5nS72xWdAkuT+j4e2bDXWjRCqt5MVz3w62ZrJvTeC5LS4buCINWcsT8AY9lMtF39NHtn54Yx6at+YFrOFafLuJS80X+yJGsPsLgKOjow+ImYppZ9EltEeWj1sy61ny0lHPFggU6rp+dGV5Kc6bQV+WzT8Lhb/4gZ5xgSxFLrMC+7VxK2fbtggO/dW3xeYkGMSUR6/eZhB6n9mwE9OUw9yNUT/7NKE970obwHaWhb/AnobAO4H6FjBMJQOxFFs/TNJjaFg1stEhJPlcVA/QsRQoNl0K11Ig=
-  file: OpenVnmrJ_${TRAVIS_TAG}.tgz
+  file: "${RELEASE_PKG_FILE}"
   on:
     tags: true
     repo:
