@@ -75,6 +75,3 @@ deploy:
   file: "${RELEASE_PKG_FILE}"
   on:
     tags: true
-    repo:
-    - OpenVnmrJ/OpenVnmrJ
-    - tesch1/OpenVnmrJ
