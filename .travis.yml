@@ -64,7 +64,7 @@ after_failure:
 - find . -name 'build*' -exec tail -100 {} \;
 
 before_deploy:
-- export RELEASE_PKG_FILE=${OVJ_BUILDDIR}/OpenVnmrJ_${TRAVIS_TAG}.tgz
+- export RELEASE_PKG_FILE=${OVJ_BUILDDIR}/OpenVnmrJ_${TRAVIS_TAG}_${TRAVIS_OS_NAME}.tgz
 - cd ${OVJ_BUILDDIR} && tar czf ${RELEASE_PKG_FILE} dvdimage*
 
 deploy:
