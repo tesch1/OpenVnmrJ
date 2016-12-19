@@ -57,7 +57,8 @@ script:
 - export OVJ_TOOLS=${OVJ_BUILDDIR}/ovjTools
 - cd ${OVJ_ROOT}
 - cp -a ${OVJ_TOOLS}/bin ${OVJ_BUILDDIR}
-- cd ${OVJ_BUILDDIR}/bin && ./build_release.sh build package
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ${OVJ_BUILDDIR}/bin && ./build_release.sh --inova no build package; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then cd ${OVJ_BUILDDIR}/bin && ./build_release.sh build package; fi
 
 after_failure:
 - cd ${OVJ_ROOT}
