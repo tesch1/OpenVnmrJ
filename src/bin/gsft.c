@@ -31,8 +31,7 @@
 #include        <stdlib.h>
 #include        <string.h>
 #include	<math.h>
-#include	"nrutil.h"
-#include	"nr.h"
+#include <fftw3.h>
 #include	"util.h"
 
 
@@ -65,7 +64,7 @@ char	*argv[];
     int		zf;				/* zerofill, size, factor */
     float	xfov,yfov,zfov;
     float	delay,threshold, thresh;
-    int		*mapsize;			/* NR vector of dimensions */
+    int		mapsize[3];			/* NR vector of dimensions */
     int		totalmapsize;			/* product of dimensions */
     int		totalmapsize0;			/* product of dimensions, raw data */
 
@@ -96,10 +95,6 @@ char	*argv[];
     /* check command string */
     checkargs(argv[0],argc,"rootfilename");
 
-     /* allocate space for mapsize vector (NR vector) */
-
-    mapsize = ivector(1,3);
-
      /* process arguments */
 
     args = 1;
@@ -126,9 +121,9 @@ char	*argv[];
      
     efgets(s,80,paramsfile);
     sscanf(s,"%d %d %d %d",&xres,&yres,&zres,&zf);  /* zf=1 default */
-    mapsize[3] = xres;    /* size refers to final output size after zerofill */
-    mapsize[2] = yres;
-    mapsize[1] = zres;
+    mapsize[2] = xres;    /* size refers to final output size after zerofill */
+    mapsize[1] = yres;
+    mapsize[0] = zres;
     if(zf == 1) {
       xres0 = xres;
       yres0 = yres;
@@ -160,13 +155,20 @@ char	*argv[];
      /* allocate space for raw, phase, and magnitude arrays */
 
     raw = (float *) calloc((unsigned)(2*totalmapsize0),sizeof(float));
-    graw = vector(0,2*totalmapsize0);
-    fraw = vector(0,2*totalmapsize);
-    freconphase = vector(0,totalmapsize);
-    freconphase2 = vector(0,totalmapsize);
-    field = vector(0,totalmapsize);
-    freconmag = vector(0,totalmapsize);
-    freconmag2 = vector(0,totalmapsize);
+    //graw = vector(0,2*totalmapsize0);
+    //fraw = vector(0,2*totalmapsize);
+    //freconphase = vector(0,totalmapsize);
+    //freconphase2 = vector(0,totalmapsize);
+    //field = vector(0,totalmapsize);
+    //freconmag = vector(0,totalmapsize);
+    //freconmag2 = vector(0,totalmapsize);
+    graw = fftw_malloc(2*totalmapsize0 * sizeof(float));
+    fraw = fftw_malloc(2*totalmapsize * sizeof(float));
+    freconphase = fftw_malloc(totalmapsize * sizeof(float));
+    freconphase2 = fftw_malloc(totalmapsize * sizeof(float));
+    field = fftw_malloc(totalmapsize * sizeof(float));
+    freconmag = fftw_malloc(totalmapsize * sizeof(float));
+    freconmag2 = fftw_malloc(totalmapsize * sizeof(float));
      /* process the first echo */
 
     /* read in */
@@ -244,7 +246,11 @@ char	*argv[];
           }
   
     /* 3D FFT */
-    fourn(fraw-1,mapsize,3,-1);
+    //fourn(fraw-1,mapsize,3,-1);
+    fftwf_plan plan = fftwf_plan_dft_3d(mapsize[0], mapsize[1], mapsize[2],
+                                       (fftwf_complex *)fraw, (fftwf_complex *)fraw,
+                                       FFTW_FORWARD, FFTW_ESTIMATE);
+    fftwf_execute(plan);
 
     /* dc correction */
     for ( z=0 ; z<zres ; z++ )
@@ -338,7 +344,8 @@ char	*argv[];
           }
 
     /* 3D FFT */
-    fourn(fraw-1,mapsize,3,-1);
+    fftwf_execute(plan);
+    fftwf_destroy_plan(plan);
 
     /* baseline correct */
     for ( z=0 ; z<zres ; z++ )
