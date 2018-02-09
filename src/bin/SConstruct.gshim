@@ -62,8 +62,7 @@ buildMethods.makeSymLinks(gsEnv, gshimUObj, cwd, vnmrPath, vnmrHdrList)
 for i in gshimAllFileList:
    (filename, ext) = os.path.splitext(i)
    tempBuildObj = gsEnv.Program(target = filename,
-                                source = [i,
-                                          gshimUObj],
+                                source = [i, gshimUObj],
                                 LIBS   = ['m'])
 
    gsEnv.AddPostAction(tempBuildObj,
@@ -73,9 +72,8 @@ for i in gshimAllFileList:
 for i in gshimNrUFileList:
    (filename, ext) = os.path.splitext(i)
    tempBuildObj = gsEnv.Program(target = filename,
-                                source = [i,
-                                          gshimUObj],
-                                LIBS   = ['m'])
+                                source = [i, gshimUObj],
+                                LIBS   = ['m', 'fftw3', 'fftw3f', 'lapack', 'lapacke'])
 
    gsEnv.AddPostAction(tempBuildObj,
                Action(Copy(optionsImageBinPath, os.path.join(cwd, filename))))

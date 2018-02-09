@@ -12,13 +12,15 @@
 #include        <stdlib.h>
 #include        <string.h>
 #include	<math.h>
-#include	"nrutil.h"
-#include	"nr.h"
+//#include	"nrutil.h"
+//#include	"nr.h"
+#include <clapack.h>
 #include	"util.h"
 
 #define		TWOPI		6.28318531
 #define		ZWIDTH		15		/* minimum z to use z3 */
 #define		TOTALSHIMS	50		/* max number of shims in varian shimsets */
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 /* indexing calculations */
 #define 	refindex(s,p,r)	(s*prefres*rrefres+p*rrefres+r)
@@ -90,7 +92,7 @@ char	*argv[];
     int		rrefres,prefres,srefres;	/* size of reference maps */
     float	rreffov,preffov,sreffov;	/* FOV of field map image */    
     float	*onerefmap;			/* one whole reference map */
-    float	**A,**AA;			/* all extracted ref maps */
+    float	*A,*AA;				/* all extracted ref maps */
     float	mapdelay,refdelay;		/* delay (ms) between refs */
     float	minmapdelay,minrefdelay;	/* delay (ms) refs; short */
     /* field map */
@@ -247,7 +249,7 @@ char	*argv[];
     totalshims = shimct+1;   /* shimct=no of shims defined in shimmap.param */
 
     /* read the information for each shim; Note, shimname[0] = z0 */
-    /* shimused - 1=used i.e. mapped to generate field map, ref.field; 0=not used */
+    /* shimused   - 1=used i.e. mapped to generate field map, ref.field; 0=not used */
     /* shimactive - 1=used to generate field map and for shim adjustment calc.
                     0= not used for shim adjustment calc. */
     for ( shim=1 ; shim<totalshims; shim++ )   /* shim[0]==z0 info not in .param file */
@@ -268,7 +270,7 @@ char	*argv[];
 	sscanf(str,"%s %f",shimlist[i],&shimvalue[i]);
     }
     **/  
- 
+#if 0
     /* init shimvalues for working array */
     shimval[0] = 0;	/* z0 */
     for (i=1; i<totalshims; i++)
@@ -279,6 +281,7 @@ char	*argv[];
     		shimval[i] = shimvalue[i];
     	}
     }
+#endif
  
     /* add the z0 shim information, and increment number of shims */
     strcpy(shimname[0],"z0");
@@ -437,7 +440,7 @@ char	*argv[];
 	
     numshims = 0;
     numrefshims = 0;
-    for ( shim=0 ; shim<totalshims ; shim++ )   /* no of shims used for calc; includes z0 */
+    for ( shim=0 ; shim<totalshims ; shim++ )   /* num shims used for calc; includes z0 */
     {
 	numshims += shimactive[shim];        	/* shimactive[0]=1 for z0 */
 	numrefshims += shimused[shim];		/* shimused[0]=1 for z0 */
@@ -446,25 +449,23 @@ char	*argv[];
     /*
      * read the reference maps
      * 
-     * this array is allocated per Numerical Recipes requirement
-     * for SVD solution, i.e. with [1..N] indexing
+     * this array is allocated for SVD solution, i.e. with [0..N-1] indexing
      *
      * two copies of this matrix are required, so we can compute the residual
      */
-
     /* allocate space for the A matrix */
-    A = matrix(1,numpoints,1,numshims);
-    AA = matrix(1,numpoints,1,numshims);
-
+    A = calloc(numpoints * numshims, sizeof(float)); //matrix(1,numpoints,1,numshims);
+    AA = calloc(numpoints * numshims, sizeof(float)); //matrix(1,numpoints,1,numshims);
+#define Aindex(pt,sh) (sh + pt * numshims)
     /* fill the first column of the matrix, for the z0 shim */
-    for ( point=1 ; point<=numpoints ; point++ ) 
-	A[point][1] = 1.0;
+    for ( point=0 ; point < numpoints ; point++ ) 
+      A[Aindex(point, 0)] = 1.0;
 
     /* allocate space for a single map */
     onerefmap = (float *) calloc((unsigned)totalrefsize,sizeof(float));
 
     /* loop through the shims, extracting active points */
-    thisshim = 2;
+    thisshim = 1;
     for ( shim=1 ; shim<totalshims ; shim++ ) 
     {
     	if (shimused[shim] == 1)    /* if this shim is mapped in shimmap.f read into array */
@@ -475,10 +476,10 @@ char	*argv[];
 		/* extract the points required for calculation */
 		if ( shimactive[shim] == 1 )   /* if this shim used for calculation? */
 		{
-	   	 thispoint = 1;
+	   	 thispoint = 0;
 	   	 for ( point=0 ; point<totalrefsize ; point++ )
 			if ( refmask[point] == 1 )
-			    A[thispoint++][thisshim] = onerefmap[point];
+                        	A[Aindex(thispoint++, thisshim)] = onerefmap[point];
 	   	 thisshim++;
 		}
 	}
@@ -486,9 +487,9 @@ char	*argv[];
     free(onerefmap);
 
     /* copy A */
-    for ( point=1 ; point<=numpoints ; point++ )
-	for ( shim=1 ; shim<=numshims ; shim++ )
-	    AA[point][shim] = A[point][shim];
+    for ( point=0 ; point < numpoints ; point++ )
+        for ( shim=0 ; shim < numshims ; shim++ )
+            AA[Aindex(point,shim)] = A[Aindex(point,shim)];
 
     /*
      * read the current field map
@@ -498,7 +499,7 @@ char	*argv[];
      */
 
     /* allocate space for the B matrix */
-    B = vector(1,numpoints);
+    B = calloc(numpoints, sizeof(float)); //vector(1,numpoints);
 
     /* allocate space for the input map */
     map = (float *) calloc((unsigned)totalmapsize,sizeof(float));
@@ -517,23 +518,33 @@ char	*argv[];
      */
 
     /* allocate space for the decomposition, residual, and result */
-    W = vector(1,numshims);
-    V = matrix(1,numshims,1,numshims);
-    R = vector(1,numpoints);
-    X = vector(1,numshims);
+    W = calloc(numshims, sizeof(float)); //vector(1,numshims);
+    V = calloc(numshims * numshims, sizeof(float)); //matrix(1,numshims,1,numshims);
+    R = calloc(numpoints, sizeof(float)); //vector(1,numpoints);
+    X = calloc(MAX(numshims,numpoints), sizeof(float)); //vector(1,numshims);
 
-    /* perform the decomposition */
-    svdcmp(A,numpoints,numshims,W,V);
+    /* perform the decomposition of [A := UWV*]  ===>  [A=U, W=w[1..n], V=V] */
+    /* svdcmp(A,numpoints,numshims,W,V); */
 
-    /* solve */
-    svbksb(A,W,V,numpoints,numshims,B,X);
+    /* solve for X s.t. A*X ~= B  */
+    /* svbksb(A,W,V,numpoints,numshims,B,X); */
+
+    /* just use equivalent lapack routine for linear least squares */
+    /* void sgelsd(int m, int n, int nrhs, float *a, int lda, float *b,
+       int ldb, float *s, float rcond, int *rank, int *info);
+    */
+    int rank, info;
+    for ( point = 0; point < numpoints; ++point)
+      X[point] = B[point];
+    /* warning - this destroys A */
+    LAPACKE_sgelsd(numpoints, numshims, 1, A, numshims, X, numpoints, W, 1e-6, &rank, &info);
 
     /* compute residual */
-    for ( point=1 ; point<=numpoints ; point++ )
+    for ( point=0 ; point < numpoints ; point++ )
     {
 	R[point] = B[point];
-	for ( shim=1 ; shim<=numshims ; shim++ )
-	   R[point] -= AA[point][shim]*X[shim];
+	for ( shim=0 ; shim < numshims ; shim++ )
+          R[point] -= AA[Aindex(point, shim)]*X[shim];
     }
     
     free(refmask);
@@ -542,7 +553,7 @@ char	*argv[];
      * compute the change in shim DAC's
      */
 
-    thisshim = 1;
+    thisshim = 0;
     for ( shim=0 ; shim<totalshims ; shim++ )
     {
     	if (shimused[shim] == 1)
@@ -557,7 +568,7 @@ char	*argv[];
      * write out the field map, B0.f.out 
      */
 
-    thispoint = 1;
+    thispoint = 0;
     for ( point=0 ; point<totalmapsize ; point++ )
     {
 	if ( mapmask[point] == 1 )
@@ -575,7 +586,7 @@ char	*argv[];
      * analyse the current shim map
      */
 
-    for ( point=1 ; point<=numpoints ; point++ )
+    for ( point=0 ; point < numpoints ; point++ )
     {
 	meanbefore += B[point];
 	maxbefore = ( maxbefore < B[point] ) ? B[point] : maxbefore;
@@ -584,7 +595,7 @@ char	*argv[];
 
     meanbefore /= numpoints;
 
-    for ( point=1 ; point<=numpoints ; point++ )
+    for ( point = 0; point < numpoints ; point++ )
 	varbefore += pow((double)(B[point]-meanbefore),2.0);
     varbefore /= numpoints;
 
@@ -598,7 +609,7 @@ char	*argv[];
      * analyse the output
      */
 
-    for ( point=1 ; point<=numpoints ; point++ )
+    for ( point = 0 ; point < numpoints ; point++ )
     {
 	meanafter += R[point];
 	maxafter = ( maxafter < R[point] ) ? R[point] : maxafter;
@@ -607,7 +618,7 @@ char	*argv[];
 
     meanafter /= numpoints;
 
-    for ( point=1 ; point<=numpoints ; point++ )
+    for ( point = 0 ; point < numpoints ; point++ )
 	varafter += pow((double)(R[point]-meanafter),2.0);
     varafter /= numpoints;
 
@@ -690,18 +701,12 @@ char	*argv[];
 }
 
 /*****************************************************************************
-		Modification History
-		
-030512(ss) minrefdelay,minmapdelay added
-
-******************************************************************************/
-
-
-/**********************************************************************
                  Modification History
 25jul02(ss)
 20jun02(ss) Working version
 31jul02(ss) read, phase, slice references instead of x, y, z
 27aug03(ss) voxpoints points printed
+030512(ss) minrefdelay,minmapdelay added
+09feb18(mt) use lapack instead of num.recip.
 
 **********************************************************************/
