@@ -25,8 +25,7 @@
 #include        <stdlib.h>
 #include        <string.h>
 #include	<math.h>
-#include	"nrutil.h"
-#include	"nr.h"
+#include <fftw3.h>
 #include	"util.h"
 
 
@@ -57,12 +56,11 @@ char	*argv[];
     int		xres,yres,zres;			/* map dimensions */
     float	xfov,yfov,zfov;
     float	delay,threshold, thresh;
-    int		*mapsize;			/* NR vector of dimensions */
     int		totalmapsize;			/* product of dimensions */
 
     float	*raw,*raw2,*raw3,*buf;		/* raw data */
     float	*fraw,*fraw2,*fraw3;		/* floated raw data */
-    float	*ftbuf,*ftbuf2,*ftbuf3;		/* ft buffer */
+    float	*ftbuf;				/* ft buffer */
     int		args;				/* argument cntr */
 
     int		x,y,z,echo,block,i,ptr;		/* loop counters */
@@ -84,9 +82,6 @@ char	*argv[];
 
     /* check command string */
     checkargs(argv[0],argc,"rootfilename");
-
-     
-    mapsize = ivector(1,2); /* allocate space for mapsize (NR)vector */
 
      /* process arguments */
 
@@ -131,8 +126,8 @@ char	*argv[];
     sscanf(s,"%d",&slices);    
      /* calculate array size */
 
-    mapsize[2] = xres;  /* read */
-    mapsize[1] = yres;  /* pe */
+    //mapsize[1] = xres;  /* read */
+    //mapsize[0] = yres;  /* pe */
     if(zres <= 1)
       zres = slices; 
     totalmapsize = zres*yres*xres;  /* r,p,s */
@@ -150,11 +145,9 @@ char	*argv[];
     fraw2 = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
     fraw3 = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
     buf = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
-    
-    ftbuf = vector(0,2*imgsize);
-    ftbuf2 = vector(0,2*imgsize);
-    ftbuf3 = vector(0,2*imgsize);
-    
+
+    ftbuf = fftw_malloc(2*imgsize * sizeof(float));
+
     /* process echo #1 */
     /* read in binary data */
     if ( fread(raw,sizeof(float), 2*totalmapsize, rawfile) != 2*totalmapsize )
@@ -229,12 +222,16 @@ char	*argv[];
 	    }
     }	    
 
+    fftwf_plan plan = fftwf_plan_dft_2d(yres, xres,
+                                        (fftwf_complex *)ftbuf, (fftwf_complex *)ftbuf,
+                                        FFTW_FORWARD, FFTW_ESTIMATE);
     for ( z=0 ; z<zres ; z++ )
     {
         ptr = z*imgsize*2; /* pointer to next slice */
         for(i=0; i<imgsize*2; i++)
           ftbuf[i] = fraw[ptr+i];  
-        fourn(ftbuf-1, mapsize, 2, -1);  /* 2D FFT on each slice*/
+        fftwf_execute(plan);
+        //fourn(ftbuf-1, mapsize, 2, -1);  /* 2D FFT on each slice*/
         for(i=0; i<imgsize*2; i++)
           fraw[ptr+i] = ftbuf[i];        
         /* dc correction */    
@@ -339,10 +336,11 @@ char	*argv[];
     {
         ptr = z*imgsize*2; /* pointer to next slice */
         for(i=0; i<imgsize*2; i++)
-          ftbuf2[i] = fraw2[ptr+i];  
-        fourn(ftbuf2-1, mapsize, 2, -1);  /* 2D FFT on each slice*/
+          ftbuf[i] = fraw2[ptr+i];  
+        //fourn(ftbuf-1, mapsize, 2, -1);  /* 2D FFT on each slice*/
+        fftwf_execute(plan);
         for(i=0; i<imgsize*2; i++)
-          fraw2[ptr+i] = ftbuf2[i];        
+          fraw2[ptr+i] = ftbuf[i];        
         /* dc correction */    
 	for ( y=0 ; y<yres ; y++ )
 	{
@@ -444,10 +442,11 @@ char	*argv[];
     {
         ptr = z*imgsize*2; /* pointer to next slice */
         for(i=0; i<imgsize*2; i++)
-          ftbuf3[i] = fraw3[ptr+i];  
-        fourn(ftbuf3-1, mapsize, 2, -1);  /* 2D FFT on each slice*/
+          ftbuf[i] = fraw3[ptr+i];  
+        //fourn(ftbuf-1, mapsize, 2, -1);  /* 2D FFT on each slice*/
+        fftwf_execute(plan);
         for(i=0; i<imgsize*2; i++)
-          fraw3[ptr+i] = ftbuf3[i];        
+          fraw3[ptr+i] = ftbuf[i];        
         /* dc correction */    
 	for ( y=0 ; y<yres ; y++ )
 	{
@@ -469,7 +468,9 @@ char	*argv[];
 	                     
     /* write out the FT'ed complex data */
     fwrite(buf,sizeof(float),2*totalmapsize,phasefile3);
-        
+
+    /* free fftw plan */
+    fftwf_destroy_plan(plan);
 }
 
 /******************************************************************************

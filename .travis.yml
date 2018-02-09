@@ -29,12 +29,13 @@ addons:
     - scons
     - fort77
     - libglu1-mesa-dev
+    - libfftw3-dev
     - lib32stdc++-4.8-dev
     - libc6-dev-i386
     - gcc-multilib
 
 before_install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons gcc ; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons fftw ; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then jdk_switcher use openjdk6; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg --add-architecture i386; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo apt-get -qq update; fi
