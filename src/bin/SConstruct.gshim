@@ -39,7 +39,7 @@ gshimNrUFileList = ['gsft.c',
 # build environments
 gsEnv = Environment(CCFLAGS    = '-g -O2 -m64',
                     CPPDEFINES = ['LINUX'],
-                    LINKFLAGS  = '-m64 -lfftw3 -lfftw3f',
+                    LINKFLAGS  = '-m64',
                     CPPPATH    = [cwd])
 
 # define with absolute path where built files will be copied
