@@ -29,7 +29,7 @@ addons:
     - scons
     - fort77
     - libglu1-mesa-dev
-    - libatlas-base-dev
+    - liblapacke-dev
     - libfftw3-dev
     - lib32stdc++-4.8-dev
     - libc6-dev-i386
