@@ -14,7 +14,7 @@
 #include	<math.h>
 //#include	"nrutil.h"
 //#include	"nr.h"
-#include <clapack.h>
+#include <lapacke.h>
 #include	"util.h"
 
 #define		TWOPI		6.28318531
