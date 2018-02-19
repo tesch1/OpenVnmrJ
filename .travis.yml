@@ -29,6 +29,7 @@ addons:
     - scons
     - fort77
     - libglu1-mesa-dev
+    - liblapack-dev
     - liblapacke-dev
     - libfftw3-dev
     - lib32stdc++-4.8-dev
@@ -36,6 +37,7 @@ addons:
     - gcc-multilib
 
 before_install:
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew cask uninstall oclint ; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons fftw ; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then jdk_switcher use openjdk6; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo dpkg --add-architecture i386; fi
