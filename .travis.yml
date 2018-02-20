@@ -27,7 +27,7 @@ addons:
     - r-packages-trusty
     packages:
     - scons
-    - fort77
+    - gfortran
     - libglu1-mesa-dev
     - liblapack-dev
     - liblapacke-dev
@@ -63,7 +63,7 @@ script:
 - cp -a ${OVJ_TOOLS}/bin ${OVJ_BUILDDIR}
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ${OVJ_BUILDDIR}/bin && ./build_release.sh --inova no build package; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then cd ${OVJ_BUILDDIR}/bin && ./build_release.sh build package; fi
-- ${OVJ_TOOLS}/bin/whatsin $(ls -t ${OVJ_BUILDDIR}/logs/build* | head -1) | tail -30
+- ${OVJ_TOOLS}/bin/whatsin $(ls -t ${OVJ_BUILDDIR}/logs/build* | head -1)
 
 after_failure:
 - cd ${OVJ_ROOT}
