@@ -25,6 +25,7 @@
 /* indexing calculations */
 #define 	refindex(s,p,r)	(s*prefres*rrefres+p*rrefres+r)
 #define 	mapindex(s,p,r)	(s*pmapres*rmapres+p*rmapres+r)
+#define Aindex(pt,sh) (sh + pt * numshims)
 
 /* shim names, units, offsets */
 char		shimname[TOTALSHIMS][10];	/* names of shims */
@@ -456,7 +457,7 @@ char	*argv[];
     /* allocate space for the A matrix */
     A = calloc(numpoints * numshims, sizeof(float)); //matrix(1,numpoints,1,numshims);
     AA = calloc(numpoints * numshims, sizeof(float)); //matrix(1,numpoints,1,numshims);
-#define Aindex(pt,sh) (sh + pt * numshims)
+
     /* fill the first column of the matrix, for the z0 shim */
     for ( point=0 ; point < numpoints ; point++ ) 
       A[Aindex(point, 0)] = 1.0;
