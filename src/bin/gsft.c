@@ -64,7 +64,6 @@ char	*argv[];
     int		zf;				/* zerofill, size, factor */
     float	xfov,yfov,zfov;
     float	delay,threshold, thresh;
-    int		mapsize[3];			/* NR vector of dimensions */
     int		totalmapsize;			/* product of dimensions */
     int		totalmapsize0;			/* product of dimensions, raw data */
 
@@ -121,9 +120,6 @@ char	*argv[];
      
     efgets(s,80,paramsfile);
     sscanf(s,"%d %d %d %d",&xres,&yres,&zres,&zf);  /* zf=1 default */
-    mapsize[2] = xres;    /* size refers to final output size after zerofill */
-    mapsize[1] = yres;
-    mapsize[0] = zres;
     if(zf == 1) {
       xres0 = xres;
       yres0 = yres;
@@ -145,23 +141,16 @@ char	*argv[];
     /* read phase delay */
     efgets(s,80,paramsfile);
     sscanf(s,"%f",&threshold);
-     /* calculate array size */
+    /* calculate array size */
     
     totalmapsize = zres*yres*xres;
     totalmapsize0 = zres0*yres0*xres0;
     
     scale = 1.0/sqrt((double) totalmapsize);
 
-     /* allocate space for raw, phase, and magnitude arrays */
+    /* allocate space for raw, phase, and magnitude arrays */
 
-    raw = (float *) calloc((unsigned)(2*totalmapsize0),sizeof(float));
-    //graw = vector(0,2*totalmapsize0);
-    //fraw = vector(0,2*totalmapsize);
-    //freconphase = vector(0,totalmapsize);
-    //freconphase2 = vector(0,totalmapsize);
-    //field = vector(0,totalmapsize);
-    //freconmag = vector(0,totalmapsize);
-    //freconmag2 = vector(0,totalmapsize);
+    raw = fftw_malloc(2*totalmapsize0 * sizeof(float));
     graw = fftw_malloc(2*totalmapsize0 * sizeof(float));
     fraw = fftw_malloc(2*totalmapsize * sizeof(float));
     freconphase = fftw_malloc(totalmapsize * sizeof(float));
@@ -169,7 +158,7 @@ char	*argv[];
     field = fftw_malloc(totalmapsize * sizeof(float));
     freconmag = fftw_malloc(totalmapsize * sizeof(float));
     freconmag2 = fftw_malloc(totalmapsize * sizeof(float));
-     /* process the first echo */
+    /* process the first echo */
 
     /* read in */
     if ( fread(raw,sizeof(float),2*totalmapsize0,rawfile) != 2*totalmapsize0 )
@@ -178,7 +167,6 @@ char	*argv[];
     /* check file size and apply gaussian filter */
     /* gauss.h contains a 256 point, gaussian array, _step is resolution */ 
 
-     
     if (zres0 == 32) 
     	zstep = 8;
     else if (zres0 == 64)
@@ -246,10 +234,9 @@ char	*argv[];
           }
   
     /* 3D FFT */
-    //fourn(fraw-1,mapsize,3,-1);
-    fftwf_plan plan = fftwf_plan_dft_3d(mapsize[0], mapsize[1], mapsize[2],
-                                       (fftwf_complex *)fraw, (fftwf_complex *)fraw,
-                                       FFTW_FORWARD, FFTW_ESTIMATE);
+    fftwf_plan plan = fftwf_plan_dft_3d(zres, yres, xres,
+                                        (fftwf_complex *)fraw, (fftwf_complex *)fraw,
+                                        FFTW_FORWARD, FFTW_ESTIMATE);
     fftwf_execute(plan);
 
     /* dc correction */
