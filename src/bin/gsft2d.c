@@ -56,7 +56,7 @@ char	*argv[];
     int		xres,yres,zres;			/* map dimensions */
     float	xfov,yfov,zfov;
     float	delay,threshold, thresh;
-    int		totalmapsize;			/* product of dimensions */
+    size_t	totalmapsize;			/* product of dimensions */
 
     float	*raw,*raw2,*raw3,*buf;		/* raw data */
     float	*fraw,*fraw2,*fraw3;		/* floated raw data */
@@ -137,14 +137,14 @@ char	*argv[];
 
     /* allocate space for raw, phase, and magnitude arrays */
 
-    raw = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
-    raw2 = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
-    raw3 = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
+    raw = (float *) calloc(2*totalmapsize, sizeof(float));
+    raw2 = (float *) calloc(2*totalmapsize, sizeof(float));
+    raw3 = (float *) calloc(2*totalmapsize, sizeof(float));
     
-    fraw = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
-    fraw2 = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
-    fraw3 = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
-    buf = (float *) calloc((unsigned)(2*totalmapsize),sizeof(float));
+    fraw = (float *) calloc(2*totalmapsize, sizeof(float));
+    fraw2 = (float *) calloc(2*totalmapsize, sizeof(float));
+    fraw3 = (float *) calloc(2*totalmapsize, sizeof(float));
+    buf = (float *) calloc(2*totalmapsize, sizeof(float));
 
     ftbuf = fftw_malloc(2*imgsize * sizeof(float));
 
