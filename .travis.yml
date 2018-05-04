@@ -51,8 +51,9 @@ install:
 - pwd
 - cd ..
 - git config --global core.pager ''
-- GITHUB_USER=`dirname ${TRAVIS_REPO_SLUG}`
-- git clone --depth 3 --branch ${TRAVIS_BRANCH} https://github.com/${GITHUB_USER}/ovjTools.git
+- GITHUB_USER=$(dirname ${TRAVIS_REPO_SLUG})
+- git clone --depth 3 --branch master https://github.com/${GITHUB_USER}/ovjTools.git
+#- git clone --depth 3 --branch ${TRAVIS_BRANCH} https://github.com/${GITHUB_USER}/ovjTools.git
 
 script:
 - echo ${TRAVIS_BRANCH} ${TRAVIS_BUILD_DIR} ${TRAVIS_BUILD_ID} ${TRAVIS_BUILD_NUMBER} ${TRAVIS_COMMIT} ${TRAVIS_COMMIT_RANGE} ${TRAVIS_EVENT_TYPE} ${TRAVIS_JOB_ID} ${TRAVIS_JOB_NUMBER} ${TRAVIS_OS_NAME} ${TRAVIS_PULL_REQUEST} ${TRAVIS_PULL_REQUEST_BRANCH} ${TRAVIS_PULL_REQUEST_SHA} ${TRAVIS_REPO_SLUG} ${TRAVIS_SUDO} ${TRAVIS_TEST_RESULT} ${TRAVIS_TAG}
@@ -61,9 +62,9 @@ script:
 - export OVJ_TOOLS=${OVJ_BUILDDIR}/ovjTools
 - cd ${OVJ_ROOT}
 - cp -a ${OVJ_TOOLS}/bin ${OVJ_BUILDDIR}
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ${OVJ_BUILDDIR}/bin && ./build_release.sh --inova no build package; fi
-- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then cd ${OVJ_BUILDDIR}/bin && ./build_release.sh build package; fi
-- ${OVJ_TOOLS}/bin/whatsin $(ls -t ${OVJ_BUILDDIR}/logs/build* | head -1) | tail -30
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd ${OVJ_BUILDDIR}/bin && ${OVJ_ROOT}/scripts/build_release.sh --inova no build package; fi
+- if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then cd ${OVJ_BUILDDIR}/bin && ${OVJ_ROOT}/scripts/build_release.sh build package; fi
+- ${OVJ_TOOLS}/bin/whatsin $(ls -t ${OVJ_BUILDDIR}/logs/build* | head -1) | tail -60
 
 after_failure:
 - cd ${OVJ_ROOT}
