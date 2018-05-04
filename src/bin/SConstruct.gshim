@@ -53,6 +53,8 @@ if not os.path.exists(optionsImageBinPath):
    os.makedirs(optionsImageBinPath)
 # if not os.path.exists(vnmrInstallPath):
 #    os.makedirs(vnmrInstallPath)
+if os.path.exists('/usr/include/lapacke'):
+   gsEnv.Append(CPPPATH = ['/usr/include/lapacke'])
 
 # actual builds
 gshimUObj = gsEnv.StaticObject(source = [gshimUFileList])

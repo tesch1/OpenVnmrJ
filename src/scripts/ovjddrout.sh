@@ -482,7 +482,7 @@ create_support_dirs $dest_dir
 echo "" | tee -a $log_file
 echo `date` | tee -a $log_file
 echo "" | tee -a $log_file
-echo "M a k i n g   V n m r J   C D R O M   I m a g e" | tee -a $log_file
+echo "M a k i n g   O p e n V n m r J   C D R O M   I m a g e" | tee -a $log_file
 
 echo $VnmrRevId  | tee -a $log_file
 echo `date '+%B %d, %Y'` | tee -a $log_file

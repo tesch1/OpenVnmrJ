@@ -8,14 +8,14 @@
  */
 /* 
  */
-#include	<stdio.h>
-#include        <stdlib.h>
-#include        <string.h>
-#include	<math.h>
-//#include	"nrutil.h"
-//#include	"nr.h"
-#include <lapacke.h>
-#include	"util.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+//#include "nrutil.h"
+//#include "nr.h"
+#include "lapacke.h"
+#include "util.h"
 
 #define		TWOPI		6.28318531
 #define		ZWIDTH		15		/* minimum z to use z3 */
@@ -25,6 +25,7 @@
 /* indexing calculations */
 #define 	refindex(s,p,r)	(s*prefres*rrefres+p*rrefres+r)
 #define 	mapindex(s,p,r)	(s*pmapres*rmapres+p*rmapres+r)
+#define Aindex(pt,sh) (sh + pt * numshims)
 
 /* shim names, units, offsets */
 char		shimname[TOTALSHIMS][10];	/* names of shims */
@@ -456,7 +457,6 @@ char	*argv[];
     /* allocate space for the A matrix */
     A = calloc(numpoints * numshims, sizeof(float)); //matrix(1,numpoints,1,numshims);
     AA = calloc(numpoints * numshims, sizeof(float)); //matrix(1,numpoints,1,numshims);
-#define Aindex(pt,sh) (sh + pt * numshims)
     /* fill the first column of the matrix, for the z0 shim */
     for ( point=0 ; point < numpoints ; point++ ) 
       A[Aindex(point, 0)] = 1.0;
@@ -518,9 +518,9 @@ char	*argv[];
      */
 
     /* allocate space for the decomposition, residual, and result */
-    W = calloc(numshims, sizeof(float)); //vector(1,numshims);
-    V = calloc(numshims * numshims, sizeof(float)); //matrix(1,numshims,1,numshims);
-    R = calloc(numpoints, sizeof(float)); //vector(1,numpoints);
+    W = calloc(numshims, sizeof(float));
+    V = calloc(numshims * numshims, sizeof(float));
+    R = calloc(numpoints, sizeof(float));
     X = calloc(MAX(numshims,numpoints), sizeof(float)); //vector(1,numshims);
 
     /* perform the decomposition of [A := UWV*]  ===>  [A=U, W=w[1..n], V=V] */
@@ -533,11 +533,11 @@ char	*argv[];
     /* void sgelsd(int m, int n, int nrhs, float *a, int lda, float *b,
        int ldb, float *s, float rcond, int *rank, int *info);
     */
-    int rank, info;
+    int rank, result;
     for ( point = 0; point < numpoints; ++point)
       X[point] = B[point];
     /* warning - this destroys A */
-    LAPACKE_sgelsd(numpoints, numshims, 1, A, numshims, X, numpoints, W, 1e-6, &rank, &info);
+    result = LAPACKE_sgelsd(LAPACK_COL_MAJOR, numpoints, numshims, 1, A, numshims, X, numpoints, W, 1e-6, &rank);
 
     /* compute residual */
     for ( point=0 ; point < numpoints ; point++ )

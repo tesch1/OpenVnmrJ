@@ -27,7 +27,7 @@ addons:
     - r-packages-trusty
     packages:
     - scons
-    - fort77
+    - gfortran
     - libglu1-mesa-dev
     - liblapack-dev
     - liblapacke-dev
