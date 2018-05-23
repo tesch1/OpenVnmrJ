@@ -16,9 +16,6 @@ os:
 
 osx_image: xcode9.3
 
-#jdk:
-#- openjdk6
-
 cache: ccache
 
 addons:
@@ -69,7 +66,7 @@ script:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ${OVJ_ROOT}/scripts/build_release.sh --inova no build package; fi
 - if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then ${OVJ_ROOT}/scripts/build_release.sh build package; fi
 - ${OVJ_TOOLS}/bin/whatsin $(ls -t ${OVJ_BUILDDIR}/logs/build* | head -1) | tail -60
-- ls -l ${OVJ_BUILDDIR}/dvdimage*
+- du -s ${OVJ_BUILDDIR}/*
 
 after_failure:
 - cd ${OVJ_ROOT}
@@ -79,6 +76,7 @@ after_failure:
 before_deploy:
 - export RELEASE_PKG_FILE=${OVJ_BUILDDIR}/OpenVnmrJ_${TRAVIS_TAG}_${TRAVIS_OS_NAME}.tgz
 - cd ${OVJ_BUILDDIR} && tar czf ${RELEASE_PKG_FILE} dvdimage*
+- ls -l
 
 deploy:
   provider: releases
