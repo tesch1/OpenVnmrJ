@@ -87,5 +87,4 @@ deploy:
   skip_cleanup: true
   overwrite: true
   on:
-    repo: tesch1/OpenVnmrJ
     tags: true
