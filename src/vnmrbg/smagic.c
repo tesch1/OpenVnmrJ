@@ -114,6 +114,7 @@ typedef int socklen_t;
 
 char         datadir[MAXPATH]; 		/* path to data in automation mode */
 char        *initCommand = NULL;        /* inital command */
+char         serverMac[MAXPATH];        /* inital command */
 char        *graphics;			/* Type of graphical display */
 char         psgaddr[MAXSTR];
 
@@ -148,6 +149,9 @@ extern int   forgroundPid;
 extern int   acqflag;
 extern int        doThisCmdHistory;
 int          JgetPid;
+extern int autoDelExp;
+extern int nextexp_d(int *expi, char *expn );
+extern int cexpCmd(int argc, char *argv[], int retc, char *retv[]);
 
 extern varInfo *findVar(char *name);
 /* static void clearVar(); */
@@ -647,14 +651,14 @@ static int sendToVnmrJinit(int nodelay, Socket *pSD )
     return (-1);
 }
 
-void net_write(char *netAddr, char *netPort, char *message)
+int net_write(char *netAddr, char *netPort, char *message)
 {
      int  bNew, port, k, len;
      char *d;
      char addr[128];
 
      if (netAddr == NULL || netPort == NULL || message == NULL)
-        return;
+        return(-1);
 /*
      if (sscanf(netAddr, "%s%d", addr, &port) != 2)
         return;
@@ -665,29 +669,32 @@ void net_write(char *netAddr, char *netPort, char *message)
      d = netPort;
      while (*d == ' ') d++;
      port = atoi(d);
+     if ( (strlen(addr) < 2) || (port == 0) )
+        return(-2);
      if (debug)
         fprintf(stderr, " net_write  host: %s   port: %d \n", addr, port);
      if (sVnmrNet.sd > 0)
         closeSocket(&sVnmrNet);
      if (openSocket(&sVnmrNet) == -1)
-        return;
+        return(-3);
      setsockopt(sVnmrNet.sd,SOL_SOCKET,(~SO_LINGER),(char *)&k,sizeof(k));
      setsockopt(sVnmrNet.sd,SOL_SOCKET,TCP_NODELAY,(char *)&k,sizeof(k));
      bNew = 0;
-     while (bNew < 8) {
+     while (bNew < 6) {
          k = connectSocket(&sVnmrNet,addr,port);
          if (k == 0)
              break;
-         if (bNew > 6)
-             return;
+         if (bNew > 4)
+             return(-4);
          bNew++;
          sleep(1);
      }
      if (sVnmrNet.sd < 0)
-         return;
+         return(-5);
      len = strlen(message);
      k =  writeSocket( &sVnmrNet, message, len);
      closeSocket(&sVnmrNet);
+     return(0);
 }
 
 static int getJfile(char *vstr )
@@ -903,7 +910,18 @@ static void vnmr_argvec(int argc, char *argv[] )
                                 else
                                     vnmode= p+1;
 				break;
-		  case 'n':     expnum = atoi(p+1);
+		  case 'n':     if ( *(p+1) == '+' )
+                                {
+                                   expnum = -1;
+                                }
+		                else if ( *(p+1) == '-' )
+                                {
+                                   expnum = -2;
+                                }
+                                else
+                                {
+                                   expnum = atoi(p+1);
+                                }
 				break;
                   case 'O':
                                 sprintf(buttonWinFds, "%s", p-1);
@@ -928,6 +946,9 @@ static void vnmr_argvec(int argc, char *argv[] )
 		  case 'r':	Rflag += 1;
 				break;
 		  case 'S':     masterWinWidth = atoi(p+1);
+				break;
+		  case 's':     i++;
+                                strcpy(serverMac, argv[i]);
 				break;
 		  case 'T':	Tflag -= 1;
 				break;
@@ -1052,6 +1073,7 @@ int vnmr(int argc, char *argv[])
 /* sleep(5); */
 
     datadir[0]= '\0';				/* No path to data */
+    serverMac[0]= '\0';				/* No path to data */
     INIT_VNMR_ADDR();
     vnmr_argvec( argc, argv );
     VNMR_ADDR_OK(); /* could put before vnmr_argvec() ?? */
@@ -1104,6 +1126,32 @@ int vnmr(int argc, char *argv[])
         graphics = "none";
         setWissun(0);
 	setupdirs( "background" );
+        if (expnum < 0)
+        {
+           int expi;
+           char expn[32];
+           if (nextexp_d( &expi, expn))
+           {
+              char *argv2[3];
+              char *retv2[2];
+                    
+              if (expnum == -2)
+                 autoDelExp=1;
+              expnum = expi;
+              sprintf(expn,"%d",expi);
+              argv2[0] = "cexp";
+              argv2[1] = expn;
+              argv2[2] = NULL;
+              strcpy( curexpdir, userdir );
+              strcat( curexpdir, "/exp0" );
+              cexpCmd(2, argv2, 1, retv2);
+   
+           }
+           else
+           {
+              expnum = 0;
+           }
+        }
         jgraphics_init();
 	bootup(vnMode,expnum);
 	if (initCommand)
@@ -1111,7 +1159,14 @@ int vnmr(int argc, char *argv[])
             char tmpStr[2048];
             if (Tflag)
 		fprintf(stderr,"executing command line %s\n",initCommand);
-            strcpy(tmpStr,initCommand);
+            if (strlen(serverMac))
+            {
+               sprintf(tmpStr,"%s(`%s`)",serverMac,initCommand);
+            }
+            else
+            {
+               strcpy(tmpStr,initCommand);
+            }
             strcat(tmpStr,"\n");
             working = 1;
             loadAndExec(tmpStr);

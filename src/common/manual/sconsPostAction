@@ -250,10 +250,12 @@ ln -s textcnv unix_vxr
 ln -s textcnv vxr_unix
 ln -s ultra18 ultra8
 ln -s unixtime systemtime
+ln -s vnmr_accounting doAcct
 ln -s wbs werr
 ln -s wbs wexp
 ln -s wbs wnt
 ln -s writef1 readf1
+ln -s writespectrum readspectrum
 ln -s writetrace writejxy
 ln -s writetrace writexy
 ln -s wtfile wtfile1

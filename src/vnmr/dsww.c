@@ -64,6 +64,7 @@ extern void clearMspec();
 extern double getPlotMargin();
 extern void setArraydis(int);
 extern int aspFrame(char *, int, int, int, int, int);
+extern int Mv(int argc, char *argv[], int retc, char *retv[]);
 
 #define CALIB 		1000.0
 #define COMPLETE 	0
@@ -1014,34 +1015,154 @@ int dsww(int argc, char *argv[], int retc, char *retv[])
 int writespectrum(int argc, char *argv[], int retc, char *retv[])
 /***********************/
 {
-   int dummy, i;
+   int dummy, specI;
    char filename[MAXSTR];
+   char tmpFilename[MAXSTR];
+   char *argv2[4];
    float *ptr;
-   float value;
+   int i;
+   int ibuf;
+   float fbuf;
    int fd;
+   int doAll = 0;
+   float scaling = 0.0;
+   int intType = 0;
+   char traceVal[16];
+   int f2 = 1;
+   int doMove = 0;
 
    if(init2d(1,1)) return(ERROR);
-   if ((specIndex < 1) || (specIndex > nblocks * specperblock))
-   {
-      Werrprintf("spectrum %d does not exist",specIndex);
-      return(ERROR);
-   }
-   if ((spectrum = calc_spec(specIndex-1,0,FALSE,TRUE,&dummy))==0)
-      return(ERROR);
-   scale = vs;
-   if (normflag)
-      scale *= normalize;
-   sprintf(filename,"%s/spec%d",curexpdir,specIndex);
+   if (argc >=2)
+      sprintf(filename,"%s",argv[1]);
+   else
+      sprintf(filename,"%s/spec%d",curexpdir,specIndex);
    unlink(filename);
-   fd = open(filename, ( O_CREAT | O_WRONLY ), 0666 );
-   ptr = spectrum;
-   for (i=0; i<fn/2; i++)
+   for (i=2; i<argc; i++)
    {
-      value = *ptr * scale;
-      ptr++;
-      write(fd, &value , sizeof(float) );
+      if (isReal(argv[i]))
+         scaling = (float) stringReal(argv[i]);
+      else if ( ! strcmp(argv[i],"all") )
+         doAll = 1;
+      else if ( ! strcmp(argv[i],"int") )
+         intType = 1;
+      else if ( ! strcmp(argv[i],"float") )
+         intType = 0;
+      else if ( ! strcmp(argv[i],"f1") )
+         f2 = 0;
+      else if ( ! strcmp(argv[i],"f2") )
+         f2 = 1;
    }
-   close(fd);
-   return(rel_spec());
+   if (d2flag)
+   {
+      P_getstring(CURRENT,"trace", traceVal, 1, 15);
+      if ( (f2==1) && strcmp(traceVal,"f2") )
+      {
+         P_setstring(CURRENT,"trace", "f2", 1);
+         if(init2d(1,1)) return(ERROR);
+      }
+      else if ( (f2==0) && strcmp(traceVal,"f1") )
+      {
+         P_setstring(CURRENT,"trace", "f1", 1);
+         if(init2d(1,1)) return(ERROR);
+      }
+   }
+   strcpy(tmpFilename,"/dev/shm");
+   if ( ! access(tmpFilename,W_OK) )
+   {
+      sprintf(tmpFilename,"/dev/shm/spec%d", (int) getpid());
+      unlink(tmpFilename);
+      doMove = 1;
+      argv2[0] = "Mv";
+      argv2[1] = tmpFilename;
+      argv2[2] = filename;
+      argv2[3] = NULL;
+   }
+   else
+   {
+      strcpy(tmpFilename,filename);
+   }
+   fd = open(tmpFilename, ( O_CREAT | O_WRONLY ), 0666 );
+   if ( doAll )
+   {
+      for (specI = 0; specI < nblocks * specperblock; specI++)
+      {
+         if ((spectrum = calc_spec(specI,0,FALSE,TRUE,&dummy))==0)
+         {
+            close(fd);
+            return(ERROR);
+         }
+         scale = vs;
+         if (normflag)
+            scale *= normalize;
+         if (scaling != 0.0)
+            scale = scaling;
+         ptr = spectrum;
+         if (intType)
+         {
+            for (i=0; i<fn/2; i++)
+            {
+               ibuf = (int) (*ptr * scale);
+               ptr++;
+               write(fd, &ibuf , sizeof(int) );
+            }
+         }
+         else
+         {
+            for (i=0; i<fn/2; i++)
+            {
+               fbuf = *ptr * scale;
+               ptr++;
+               write(fd, &fbuf , sizeof(float) );
+            }
+         }
+         rel_spec();
+      }
+      close(fd);
+      if (doMove)
+         Mv(3,argv2,0,NULL);
+      RETURN;
+   }
+   else
+   {
+      if ((specIndex < 1) || (specIndex > nblocks * specperblock))
+      {
+         Werrprintf("spectrum %d does not exist",specIndex);
+         close(fd);
+         return(ERROR);
+      }
+      if ((spectrum = calc_spec(specIndex-1,0,FALSE,TRUE,&dummy))==0)
+      {
+         close(fd);
+         return(ERROR);
+      }
+      scale = vs;
+      if (normflag)
+         scale *= normalize;
+      if (scaling != 0.0)
+         scale = scaling;
+      ptr = spectrum;
+      if (intType)
+      {
+         for (i=0; i<fn/2; i++)
+         {
+            ibuf = (int) (*ptr * scale);
+            ptr++;
+            write(fd, &ibuf , sizeof(int) );
+         }
+      }
+      else
+      {
+         for (i=0; i<fn/2; i++)
+         {
+            fbuf = *ptr * scale;
+            ptr++;
+            write(fd, &fbuf , sizeof(float) );
+         }
+      }
+      close(fd);
+      if (doMove)
+         Mv(3,argv2,0,NULL);
+      return(rel_spec());
+   }
 }
 

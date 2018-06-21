@@ -75,10 +75,12 @@ typedef int socklen_t;
 #include "errLogLib.h"
 #include "sockets.h"
 
+#ifndef VNMRJ
 #ifndef NOASYNC
 extern int setFdAsync( int fd, void *clientData, void (*callback)() );
 extern int setFdNonAsync( int fd );
 extern int setFdDirectAsync( int fd, void *clientData, void (*callback)() );
+#endif
 #endif
 
 
@@ -573,9 +575,9 @@ connectSocket( Socket *pSocket, char *hostName, int portAddr )
 /* char *hostName  -  name of (perhaps) remote host */
 /* int portAddr    -  port address of remote socket */
 {
-	int			 result;
 	struct hostent		*hp;
 #if  !defined(__INTERIX) && !defined(MACOS)
+	int			 result;
 	struct hostent		hpstruct;
         int    hp_errno;
         char   hpIPBuffer[256];
@@ -1099,6 +1101,8 @@ writeSocket( Socket *pSocket, const char *datap, int bcount )
 /* char *datap */
 /* int bcount */
 {
+        ssize_t written = 0;
+        ssize_t nwrite;
 	if (pSocket == NULL) {
 		errno = EFAULT;
 		return( -1 );
@@ -1107,8 +1111,23 @@ writeSocket( Socket *pSocket, const char *datap, int bcount )
 		errno = EBADF;
 		return( -1 );
 	}
+        while (written < bcount)
+        {
+           nwrite = write( pSocket->sd, datap+written, bcount - written );
+           if (nwrite < 0)
+           {
+              if (errno != EINTR)
+                 return(-1);
+           }
+           else
+           {
+              written += nwrite;
+           }
+              
+        }
 
-	return( write( pSocket->sd, datap, bcount ) );
+//	return( write( pSocket->sd, datap, bcount ) );
+        return(bcount);
 }
 
 int
@@ -1191,6 +1210,7 @@ int flushSocket( Socket *pSocket)
    return( rcount );
 }
 
+#ifndef VNMRJ
 #ifndef NOASYNC
 
 int
@@ -1256,6 +1276,7 @@ registerSocketDirectAsync( Socket *pSocket, void (*callback)() )
 
 	return( ival );
 }
+#endif
 #endif
 
 #ifdef FT3DIO

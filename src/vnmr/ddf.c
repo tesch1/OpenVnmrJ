@@ -102,6 +102,7 @@ int ddf(int argc, char *argv[], int retc, char *retv[])
   int f;
   int btype = 0; /* This flags that a vers_id is requested */
   int jtype = 0; /* This asks if vers_id is S_JEOL */
+  int qtype = 0; /* This asks if vers_id is S_QONE */
   int itype = 0; /* This asks for vers_id */
 
   if ((argc >= 2) && ! strcmp(argv[1],"B") )
@@ -116,6 +117,15 @@ int ddf(int argc, char *argv[], int retc, char *retv[])
   else if ((argc >= 2) && ! strcmp(argv[1],"J") )
   {
     jtype = btype=1;
+    if (argc == 3)
+    {
+      strcpy(outfidpath, argv[2]);
+      btype = 2;     
+    }
+  }
+  else if ((argc >= 2) && ! strcmp(argv[1],"Q") )
+  {
+    qtype = btype=1;
     if (argc == 3)
     {
       strcpy(outfidpath, argv[2]);
@@ -203,6 +213,8 @@ int ddf(int argc, char *argv[], int retc, char *retv[])
             retv[0] = intString( dhd.vers_id );
          else if (jtype)
             retv[0] = intString( (dhd.vers_id & S_JEOL) ? 1 : 0 );
+         else if (qtype)
+            retv[0] = intString( (dhd.vers_id & S_QONE) ? 1 : 0 );
          else
             retv[0] = intString( (dhd.vers_id & S_BRU) ? 1 : 0 );
      }
@@ -2126,33 +2138,33 @@ static int makefid_getfhead(char *cmd_name, dfilehead *fh_ref, int *update_fh_re
 
 static int count_lines(char *fn_addr )
 {
-        char     wc_command[ MAXPATH+8 ];
-        int      ival, nlines;
+        int      ival;
         FILE    *pfile;
+        int ch = 0;
+        int lines = 0;
 
 /*  Calling routine is expected to check the string length, so
     this check should be successful.  Done here to be complete.  */
 
         ival = strlen( fn_addr );
         if (ival < 0 || ival >= MAXPATH)
+        {
           return( -1 );
+        }
+        pfile = fopen(fn_addr,"r");
+        if (pfile == NULL)
+        {
+           return(-1);
+        }
+        while ( !feof(pfile) )
+        {
+           ch = fgetc(pfile);
+           if (ch == '\n')
+              lines++;
+        }
+        fclose(pfile);
+        return( lines );
 
-        sprintf( &wc_command[ 0 ], "wc -l %s", fn_addr );
-
-/*  `popen' operation should also succeed.  Most likely
-     cause for failure is the Process Table is full.    */
-
-        if ((pfile = popen_call( &wc_command[ 0 ], "r" )) == NULL)
-          return( -1 );
-
-/*   If a Failure occurs, here is the most likely spot.  */
-
-        ival = fscanf( pfile, "%d", &nlines );
-        if (ival != 1)
-          nlines = -1;
-
-        pclose_call( pfile );
-        return( nlines );
 }
 
 /*  mem_buffer expected to be the address of

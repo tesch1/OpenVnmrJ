@@ -152,6 +152,54 @@ void doingAutoExp()
    autoexp = 1;
 }
 
+int nextexp_d(int *expi, char *expn )
+{
+   double tmp;
+   int addsubexp = 5;
+   char path[MAXPATH];
+   int found = 0;
+
+   if (P_getreal(GLOBAL,"addsubexp", &tmp, 1) )
+      addsubexp = 5;
+   else
+      addsubexp = (int) (tmp+0.001);
+   *expi=1;
+   while ( !found  && ( *expi < 10000) )
+   {
+      *expi += 1;
+      if (*expi == addsubexp)
+         *expi += 1;
+      sprintf(expn,"exp%d",*expi);
+      sprintf(path,"%s/%s",userdir,expn);
+      if ( access(path, F_OK) )
+      {
+          found = 1;
+          break;
+      }
+   }
+   return(found);
+}
+
+/***************************/
+int nextexp(int argc, char *argv[], int retc, char *retv[])
+/***************************/
+{
+   int expi;
+   char expn[32];
+   int found;
+
+   found = nextexp_d( &expi, expn );
+   if (retc)
+   {
+      retv[ 0 ] = intString( (found) ? expi : 0 );
+      if (retc > 1)
+      {
+         retv[ 1 ] = newString( (found) ? expn : "" );
+      }
+   }
+   RETURN;
+}
+
 /*************************************/
 static int access_exp(char *exppath, char *estring)
 /*************************************/
@@ -1073,6 +1121,7 @@ extern int make_copy_fidfile();
 extern int D_downsizefid(int newnp, char *datapath);
 extern int D_zerofillfid(int newnp, char *datapath);
 extern int D_leftshiftfid(int lsfid, char *datapath, int *newnp);
+extern int D_scalefid(double scaling, char *datapath);
 
 int downsizefid(int argc, char *argv[], int retc, char *retv[])
 {
@@ -1360,7 +1409,107 @@ int leftshiftfid(int argc, char *argv[], int retc, char *retv[])
 
 int scalefid(int argc, char *argv[], int retc, char *retv[])
 {
-   Werrprintf("%s: not yet implemented",argv[0]);
+   int    res;
+   char   filepath[MAXPATH], procparpath[MAXPATH];
+   double scaling;
+   int curexpFid = 1;
+
+   scaling=1.0;
+   if(argc>1)
+   {
+      scaling = atof(argv[1]);
+      if (argc > 2)
+      {
+         curexpFid = 0;
+         strcpy(filepath,argv[2]);
+         if ( access(filepath,R_OK|W_OK) )
+         {
+            Winfoprintf("%s(%s,%s) data does not exist or has wrong permissions",argv[0],argv[1],argv[2]); 
+            ABORT;
+         }
+      }
+   }
+   else
+   {
+      Winfoprintf("%s requires FID scaling factor as the first argument", argv[0]); 
+      ABORT;
+   }
+   if (scaling == 1.0)
+   {
+      Winfoprintf("%s requested 1.0 as scaling factor", argv[0]); 
+      RETURN;
+   }
+
+   if (curexpFid)
+   {
+       // this will copy the fid if acqfil/fid is linked
+       make_copy_fidfile();
+ 
+      if ( (res = D_getfilepath(D_USERFILE, filepath, curexpdir)) )
+      {
+         D_error(res);
+         ABORT;
+      }
+      D_trash(D_USERFILE);
+ 
+   }
+   // make procparpath
+   strcpy(procparpath,filepath);
+   procparpath[strlen(filepath)-3] = '\0';
+   strncat(procparpath,"procpar",7);
+
+   if (D_scalefid(scaling, filepath))
+   { 
+      Werrprintf("cannot scale fid file %s",filepath);
+      ABORT;
+   }
+
+   if (curexpFid)
+   {
+      double dval;
+      if (P_getreal(CURRENT, "scalefid", &dval, 1))
+      {
+         P_creatvar(CURRENT, "scalefid", T_REAL);
+         P_setgroup(CURRENT,"scalefid",G_PROCESSING);
+         dval = scaling;
+      }
+      else
+      {
+         dval *= scaling;
+      }
+      P_setreal(CURRENT, "scalefid", dval, 1);
+      if (P_setreal(PROCESSED, "scalefid", dval, 1))
+      {
+         P_creatvar(PROCESSED, "scalefid", T_REAL);
+         P_setgroup(PROCESSED,"scalefid",G_PROCESSING);
+         P_setreal(PROCESSED, "scalefid", dval, 1);
+      }
+      if (P_save(PROCESSED,procparpath))
+      { Werrprintf("cannot save procpar file %s",procparpath);
+       ABORT;
+      }
+   }
+   else if ( ! access(procparpath,R_OK|W_OK) )
+   {
+      P_treereset(TEMPORARY);	/* clear the tree first */
+      if ( ! P_read(TEMPORARY,procparpath))
+      {
+         double dval;
+         if (P_getreal(TEMPORARY, "scalefid", &dval, 1))
+         {
+            P_creatvar(TEMPORARY, "scalefid", T_REAL);
+            P_setgroup(TEMPORARY,"scalefid",G_PROCESSING);
+            dval = scaling;
+         }
+         else
+         {
+            dval *= scaling;
+         }
+         P_setreal(TEMPORARY, "scalefid", dval, 1);
+         P_save(TEMPORARY,procparpath);
+         P_treereset(TEMPORARY);	/* clear the tree first */
+      }
+   }
    RETURN;
 }
 
