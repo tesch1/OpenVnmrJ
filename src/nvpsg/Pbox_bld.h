@@ -50,6 +50,7 @@ void make_bilev(double BLorder, double pwhi, double pwlo, double dbw, double rpw
 {
   char  cmd[MAXSTR];    
   double BLxpwr = getval("BLxpwr");
+  int ret __attribute__((unused));
 
   if(BLxpwr > 6.0)
   {
@@ -58,17 +59,17 @@ void make_bilev(double BLorder, double pwhi, double pwlo, double dbw, double rpw
     
   sprintf(cmd,"Pbox hilev.DEC -u %s -w \"wurst2i %.1f/%.7f\" -sucyc t5 -s 1.0 -p %.0f -l %.1f",
                userdir, dbw, pwhi, rpwr, rpw90*1.0e6);
-  system(cmd);  
-  if(BLorder == 16.0)             
+  ret = system(cmd);
+  if(BLorder == 16.0)
     sprintf(cmd,"Pbox lolev.DEC -u %s -w \"WURST2 %.1f/%.7f\" -sucyc m16 -s 1.0 -p %.0f -l %.1f",
                  userdir, dbw, pwlo, rpwr, rpw90*1.0e6);
   else
     sprintf(cmd,"Pbox lolev.DEC -u %s -w \"WURST2 %.1f/%.7f\" -sucyc t5,m4 -s 1.0 -p %.0f -l %.1f",
                  userdir, dbw, pwlo, rpwr, rpw90*1.0e6);
-  system(cmd);               
+  ret = system(cmd);
   hidec = getDsh("hilev");
   lodec = getDsh("lolev");
-  lodec.pwr = lodec.pwr+BLxpwr;  
+  lodec.pwr = lodec.pwr+BLxpwr;
   if (hidec.pwr > 63)
   {
     abort_message("insufficient power for bi-level decoupling. Try reducing jBL");

@@ -60,6 +60,7 @@ pulsesequence()
 		   fname[MAXSTR],cmd[MAXSTR],xsens[MAXSTR];
    extern char     userdir[];
    FILE		   *fp; 
+   int ret __attribute__((unused));
 
 /* INITIALIZE PARAMETER VALUES */
    ref_pwr=getval("tpwr");
@@ -149,7 +150,7 @@ if ((getval("arraydim") < 1.5) || (ix==1))
         fprintf(fp, "\n RF Calibration Data: ref_pwr = %4d  ref_pw90 = %5.1f", (int)ref_pwr, ref_pw90*1.0e6);
         fclose(fp);
         sprintf(cmd,"cd $vnmruser/shapelib; Pbox > /dev/null");
-        system(cmd);
+        ret = system(cmd);
       }
     else       { printf("\nUnable to write Pbox.inp file!"); psg_abort(1);}
   }
@@ -173,7 +174,7 @@ if ((getval("arraydim") < 1.5) || (ix==1))
         fprintf(fp, "\n RF Calibration Data: ref_pwr = %4d  ref_pw90 = %5.1f", (int)ref_pwr, ref_pw90*1.0e6);
         fclose(fp);
         sprintf(cmd,"cd $vnmruser/shapelib; Pbox > /dev/null");
-        system(cmd);
+        ret = system(cmd);
       }
     else       { printf("\nUnable to write Pbox.inp file!"); psg_abort(1);}
   }

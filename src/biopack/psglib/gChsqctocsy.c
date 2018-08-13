@@ -163,7 +163,7 @@ pulsesequence()
          studlvl,		/* coarse power for STUD+ decoupling */
          pwC10 = getval("pwC10"),	/* 180 degree selective sinc pulse on CO(174ppm) */
          rf7,			/* fine power for the pwC10 ("offC10") pulse */
-         rf0,			/* full fine power */
+         /*rf0,*/			/* full fine power */
          compC = getval("compC"),	/* adjustment for C13 amplifier compression */
          tau1,			/*  t1 delay */
          tau2,			/*  t2 delay */
@@ -173,13 +173,13 @@ pulsesequence()
          pwC,			/* PW90 for c nucleus @ pwClvl         */
          pwC180,		/* PW180 for c nucleus in INEPT transfers */
          pwClvl,		/* power level for 13C pulses on dec1  */
-         pwNlvl,		/* high dec2 pwr for 15N hard pulses    */
+         /*pwNlvl,*/		/* high dec2 pwr for 15N hard pulses    */
          mix,			/* noesy mix time                       */
          sw1,			/* spectral width in t1 (H)             */
          sw2,			/* spectral width in t2 (C) (3D only)   */
          slpwr, slpw, slpw5, strength, compH, cycles, fbpwr, wetpw, gt0,
          gt1, gt2, gt3, gt4, gt5, gt6, gt7, gzcal,	/* dac to G/cm conversion factor */
-         gzlvl0, gzlvl1, gzlvl2, gzlvl3, gzlvl4, gzlvl5, gzlvl6, gzlvl7;
+         gzlvl0/*, gzlvl1*/, gzlvl2, gzlvl3, gzlvl4, gzlvl5; //, gzlvl6, gzlvl7;
 
 
   /* LOAD VARIABLES */
@@ -202,7 +202,7 @@ pulsesequence()
   pwC180 = getval("pwC180");
   pwN = getval("pwN");
   pwClvl = getval("pwClvl");
-  pwNlvl = getval("pwNlvl");
+  //pwNlvl = getval("pwNlvl");
   fbpwr = getval("wetpwr");
   wetpw = getval("wetpw");
   gzcal = getval("gzcal");
@@ -215,13 +215,13 @@ pulsesequence()
   gt6 = getval("gt6");
   gt7 = getval("gt7");
   gzlvl0 = getval("gzlvl0");
-  gzlvl1 = getval("gzlvl1");
+  //gzlvl1 = getval("gzlvl1");
   gzlvl2 = getval("gzlvl2");
   gzlvl3 = getval("gzlvl3");
   gzlvl4 = getval("gzlvl4");
   gzlvl5 = getval("gzlvl5");
-  gzlvl6 = getval("gzlvl6");
-  gzlvl7 = getval("gzlvl7");
+  //gzlvl6 = getval("gzlvl6");
+  //gzlvl7 = getval("gzlvl7");
 
   /* LOAD PHASE TABLE */
   settable(t1, 2, phi1);
@@ -376,7 +376,7 @@ pulsesequence()
   }
 
   /* maximum fine power for pwC pulses */
-  rf0 = 4095.0;
+  //rf0 = 4095.0;
 
   /* "offC10": 180 degree one-lobe sinc pulse on CO, null at Ca 139ppm away */
   rf7 = (compC * 4095.0 * pwC * 2.0 * 1.65) / pwC10;	/* needs 1.65 times more     */

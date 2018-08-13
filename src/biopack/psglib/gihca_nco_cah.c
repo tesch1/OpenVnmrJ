@@ -133,7 +133,6 @@ pulsesequence()
     gzlvl5,
     gzlvl6,   /* C13 selection gradient level in DAC units */
     gzlvl7,
-    gzlvl8,
     gzlvl9,   /* H1 gradient level in DAC units            */
     rf0,
     rf2,
@@ -202,7 +201,6 @@ pulsesequence()
     gzlvl5 = getval("gzlvl5");
     gzlvl6 = getval("gzlvl6");
     gzlvl7 = getval("gzlvl7");
-    gzlvl8 = getval("gzlvl8");
     gzlvl9 = getval("gzlvl9");
 
  

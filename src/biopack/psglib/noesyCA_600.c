@@ -187,7 +187,7 @@ pulsesequence()
 
  double      tau1,         /*  t1 delay */
              tau2,         /*  t2 delay */
-             ni2,
+             //ni2,
              mix,         /* mixing time in seconds */
              pwC,          /* PW90 for c nucleus @ pwClvl         */
              pwcodec,      /* PW for C' nucleus @ dpwrco seduce dec  */
@@ -200,7 +200,7 @@ pulsesequence()
              dressed,      /* decoupler resolution for seduce decoupling */
              tpwrmess,    /* power level for Messerlie purge */
              dly_pg1,     /* duration of first part of purge */
-             dly_wt,
+             //dly_wt,
              taua1,       /* Delay for the first purge CHIRP */
              taua2,       /* Delay for the  second purge CHIRP */
                  
@@ -299,10 +299,10 @@ pulsesequence()
   phase2 = (int) ( getval("phase2") + 0.5);
   sw1 = getval("sw1");
   sw2 = getval("sw2");
-  ni2 = getval("ni2");
+  //ni2 = getval("ni2");
   tpwrmess = getval("tpwrmess");
   dly_pg1 = getval("dly_pg1");
-  dly_wt = getval("dly_wt");
+  //dly_wt = getval("dly_wt");
   taua1 = getval("taua1");
   taua2 = getval("taua2");
   

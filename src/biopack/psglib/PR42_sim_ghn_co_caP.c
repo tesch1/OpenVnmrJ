@@ -103,10 +103,10 @@ pulsesequence()
              taub,         /*  ~ 1/4JNH =  2.25 ms */
              zeta,        /* time for C'-N to refocuss set to 0.5*24.0 ms */
              bigTN,       /* nitrogen T period */
-             BigT1,       /* delay to compensate for gradient gt5 */
+             /*BigT1,*/   /* delay to compensate for gradient gt5 */
              satpwr,     /* low level 1H trans.power for presat  */
              sw1,          /* sweep width in f1                    */             
-             sw2,          /* sweep width in f2                    */             
+             /*sw2,*/      /* sweep width in f2                    */             
              cophase,      /* phase correction for CO evolution  */
              caphase,      /* phase correction for Ca evolution  */
              cbpwr,        /* power level for selective CB decoupling */
@@ -115,7 +115,7 @@ pulsesequence()
              pwS1,         /* length of  90 on Ca */
              pwS2,         /* length of  90 on CO */
              pwS3,         /* length of 180 on Ca  */
-             pwS4,         /* length of 180 on CO  */
+             /*pwS4,*/     /* length of 180 on CO  */
              pwS5,         /* length of 180 on CO/CA  */
 
              gt1,
@@ -173,12 +173,12 @@ pulsesequence()
   taub   = getval("taub"); 
   zeta  = getval("zeta");
   bigTN = getval("bigTN");
-  BigT1 = getval("BigT1");
+  //BigT1 = getval("BigT1");
   tpwr = getval("tpwr");
   satpwr = getval("satpwr");
   dpwr = getval("dpwr");
   sw1 = getval("sw1");
-  sw2 = getval("sw2");
+  //sw2 = getval("sw2");
   cophase = getval("cophase");
   caphase = getval("caphase");
 
@@ -230,7 +230,7 @@ pulsesequence()
    pwS1 = c13pulsepw("ca", "co", "square", 90.0);
    pwS2 = c13pulsepw("co", "ca", "sinc", 90.0);
    pwS3 = c13pulsepw("ca","co","square",180.0);
-   pwS4 = c13pulsepw("co","ca","sinc",180.0);
+   /*pwS4 = */c13pulsepw("co","ca","sinc",180.0);
 
 /* this section creates the chirp pulse inverting both co and ca */
 /* Pcoca180 is the name of the shapelib file created             */

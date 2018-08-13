@@ -95,7 +95,7 @@ pulsesequence()
 /* DECLARE VARIABLES */
  char     satmode[MAXSTR],f1180[MAXSTR],sspul[MAXSTR],comm[MAXSTR],
           pwx180ad[MAXSTR],pwx180adR[MAXSTR],pwx180ref[MAXSTR];
- int	  phase,satmove,maxni,t1_counter,icosel=1,
+ int	  phase/*,satmove*/,maxni,t1_counter,icosel=1,
           prgcycle = (int)(getval("prgcycle")+0.5);
  double   tau1,tauxh, tauxh1, taucc,av180,
           hsgt   = getval("hsgt"), 
@@ -119,6 +119,7 @@ pulsesequence()
           dofdec = getval("dofdec"),
 	  pwx180 = getval("pwx180"),
 	  pwxlvl180  = getval("pwxlvl180");
+  int ret __attribute__((unused));
 
   getstr("f1180",f1180);
   getstr("satmode",satmode);
@@ -127,16 +128,16 @@ pulsesequence()
   ni = getval("ni");
   av180 = (double)((int)(1e6*(9.45*4*pwx/1.54+0.5e-6))/1e6); /* round it to 1usec */
   phase = (int) (getval("phase") + 0.5);
-  satmove = ( fabs(tof - satfrq) >= 0.1 );
+  //satmove = ( fabs(tof - satfrq) >= 0.1 );
   
 /* construct a command line for Pbox */
 
    if((getval("arraydim") < 1.5) || (ix==1))        /* execute only once */
    { sprintf(comm, "Pbox ad180 -u %s -w \"cawurst-10 %.1f/%.6f\" -s 1.0 -0\n",
              userdir, 1.0/pwx, 30*pwx);
-     system(comm);                         /* create adiabatic 180 pulse */
+     ret = system(comm);                         /* create adiabatic 180 pulse */
      sprintf(comm, "Pbox av180 -u %s -w \"av180b %.6f\" -s 1.0 -0\n", userdir, av180);
-     system(comm);                        /* create refocusing 180 pulse */
+     ret = system(comm);                        /* create refocusing 180 pulse */
    }
 
 /* LOAD VARIABLES */

@@ -111,8 +111,8 @@ static void Wet4first(pulsepower,wetshape,duration,phaseA,phaseB)
 pulsesequence()
 {
    double          arraydim,compH,wetpwr,wetpwr1,
-                   corr1,corr,gstab,gzlvl1,gzlvl2,gt1,gt2,
-                   mix,wetpw,wetpw1,gtw,gtw1,gswet,gswet1;
+                   corr1,corr,gstab,gzlvl1,gzlvl2/*,gt1*/,gt2,
+                   mix,wetpw,wetpw1,gtw/*,gtw1*/,gswet,gswet1;
    int             phase;
    char            autosoft1[MAXSTR],autosoft2[MAXSTR],wetshape1[MAXSTR],
                    wetshape[MAXSTR],wet[MAXSTR],sspul[MAXSTR];
@@ -123,14 +123,14 @@ pulsesequence()
   wetpwr1=getval("wetpwr1");       
   wetpwr=getval("wetpwr");       
   wetpw1=getval("wetpw1");        /* User enters power for 90 deg. */
-  gtw1=getval("gtw1");            /* Z-Gradient duration           */
+  //gtw1=getval("gtw1");            /* Z-Gradient duration           */
   gtw=getval("gtw");            /* Z-Gradient duration           */
   gswet=getval("gswet");        /* Post-gradient stability delay */
   gswet1=getval("gswet1");        /* Post-gradient stability delay */
     compH=getval("compH");
    ni = getval("ni");
    arraydim = getval("arraydim");
-   gzlvl1=getval("gzlvl1"); gt1=getval("gt1");
+   gzlvl1=getval("gzlvl1"); //gt1=getval("gt1");
    gzlvl2=getval("gzlvl2"); gt2=getval("gt2");
    gstab=getval("gstab");
    mix = getval("mix");

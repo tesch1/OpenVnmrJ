@@ -136,7 +136,6 @@ pulsesequence()
              gzlvl7,
              gzlvl8,
              gzlvl9,
-             gzlvl10,
              gzlvl11,
 
              compH = getval("compH"),         /* adjustment for amplifier compression */
@@ -199,7 +198,6 @@ pulsesequence()
   gzlvl7 = getval("gzlvl7");
   gzlvl8 = getval("gzlvl8");
   gzlvl9 = getval("gzlvl9");
-  gzlvl10 = getval("gzlvl10");
   gzlvl11 = getval("gzlvl11");
 
 /* Load variable */

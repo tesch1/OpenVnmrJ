@@ -59,6 +59,7 @@ pulsesequence()
   char   asap[MAXSTR], adiabatic[MAXSTR],lkgate_flg[MAXSTR],cmd[MAXSTR];
   int    ncycles=0, icosel=1,
          iphase = (int)(getval("phase")+0.5);
+  int ret __attribute__((unused));
 
   getstr("asap",asap);    
   getstr("adiabatic",adiabatic);    
@@ -71,7 +72,7 @@ pulsesequence()
       ad180 = pbox_ad180("ad180", pwx, pwxlvl);    /* make adiabatic 180 */
     sprintf(cmd, "Pbox wu2mix -u %s -w \"WURST2m 20k/0.4m\" -p %.0f -l %.2f -s 2.0",userdir,
     tpwr, 1.0e6*pw*tpwr_cf);
-    system(cmd);
+    ret = system(cmd);
     mixsh = getDsh("wu2mix");
   }
 

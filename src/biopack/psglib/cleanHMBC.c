@@ -436,7 +436,7 @@ pulsesequence()
  /* Variables */
  double
   decstopd, jnch=getval("jnch"), /* present in gChsqc parameter set */
-  Epsilon, EpsilonpwC, gradlen,
+  Epsilon/*, EpsilonpwC*/, gradlen,
   /* taumethyl = 1.0/(2.0*126), */
   gstab=getval("gstab"),
   gt1=getval("gt1"),
@@ -449,7 +449,7 @@ pulsesequence()
   tCH=getval("tCH"),  /*present in gChsqc parameter set*/
   t1evol, t1min, tau,
   tpwr=getval("tpwr"),
-  tauSC, 
+  //tauSC, 
   
   gH=26.752196, /* gyromagnetic ratio of the detected nucleus */
   g13C=6.72828; /* gyromagnetic ratio for the indirectly detected nucleus
@@ -471,7 +471,7 @@ pulsesequence()
  /* Initialise Variables */
  decstopd=POWER_DELAY + PRG_STOP_DELAY;
  gradlen=gt1 + 2*GRADIENT_DELAY;
- tauSC=1/(Jmin+Jmax);
+ //tauSC=1/(Jmin+Jmax);
  tau=tCH*2;   /*tCH is 1/4J for gChsqc*/
 
  /* make sure that for the first increment d2 is zero
@@ -484,7 +484,7 @@ pulsesequence()
  t1evol=0.5*(d2 + t1evol);
  t1min=2*rof1 + 1.0e-6;
  Epsilon=t1min+2*pw;
- EpsilonpwC=Epsilon+2*pwC;
+ //EpsilonpwC=Epsilon+2*pwC;
  
  /* Start of Real time maths do not mix with 'normal' maths! */
  /* Phase Cycle calculations

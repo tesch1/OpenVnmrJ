@@ -142,7 +142,7 @@ pulsesequence()
 
  double   pwClvl = getval("pwClvl"),    /* coarse power for C13 pulse */ 
           pwC = getval("pwC"),     /* C13 90 degree pulse length at pwClvl */
-          rf0,                     /* maximum fine power when using pwC pulses */
+          /*rf0,*/                 /* maximum fine power when using pwC pulses */
           rfst,                    /* fine power for the stCall pulse */
           compC = getval("compC"), /* adjustment for C13 amplifier compression */
              tau1,                 /* t1 delay */
@@ -268,7 +268,8 @@ pulsesequence()
       else pwr_delay = POWER_DELAY;
 
 /* maximum fine power for pwC pulses (and initialize rfst) */
-        rf0 = 4095.0;    rfst=0.0;
+      //rf0 = 4095.0;
+      rfst=0.0;
 
 /* 180 degree adiabatic C13 pulse from 0 to 200 ppm */
      if (C13refoc[A]=='y')

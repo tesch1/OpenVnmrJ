@@ -63,7 +63,7 @@ pulsesequence()
  int	icosel,  t1_counter;
 
  double	d2_init = 0.0, 
-        rf0 = 4095, rf200, pw200,
+        rf0 = 4095, rf200/*, pw200*/,
         copwr, codmf, cores, copwrf,
 
         tpwrs,   
@@ -126,7 +126,7 @@ setautocal();
   if (autocal[0] == 'n')
   {
     /* 180 degree adiabatic C13 pulse from 0 to 200 ppm */
-    pw200 = getval("pw200");
+    //pw200 = getval("pw200");
     rf200 = (compC*4095.0*pwC*4000.0*sqrt((30.0*sfrq/600.0+7.0)/0.35));
     rf200 = (int) (rf200 + 0.5);
                              
@@ -148,7 +148,8 @@ setautocal();
       bw=20.0*ppm; ofs=154*ppm;
       Pdec_154p = pbox_Dsh("Pdec_154p", "WURST2", bw, ofs, compC*pwC, pwClvl);
     }
-    rf200 = stC200.pwrf;  pw200 = stC200.pw;
+    rf200 = stC200.pwrf;
+    //pw200 = stC200.pw;
   }
 /* selective H20 one-lobe sinc pulse */
    tpwrs = tpwr - 20.0*log10(pwHs/(compH*pw*1.69));

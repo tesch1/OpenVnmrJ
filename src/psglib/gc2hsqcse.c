@@ -65,8 +65,7 @@ pulsesequence()
             taug;
    int      icosel,
 	    phase1 = (int)(getval("phase")+0.5),
-            prgcycle = (int)(getval("prgcycle")+0.5),
-	    ZZgsign;
+            prgcycle = (int)(getval("prgcycle")+0.5)/*, ZZgsign*/;
    char	    pwx180ad[MAXSTR],
 	    bipflg[MAXSTR],
 	    pwx180ref[MAXSTR],
@@ -108,8 +107,8 @@ pulsesequence()
     taug = 2*tau + getval("tauC");
   else
     taug = gtE + gstab + 2 * GRADIENT_DELAY;
-  ZZgsign=-1; 
-  if (mult == 2) ZZgsign=1;
+  //ZZgsign=-1; 
+  //if (mult == 2) ZZgsign=1;
   icosel = 1;
  
   assign(ct,v17);

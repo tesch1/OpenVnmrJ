@@ -67,18 +67,18 @@ double      d2_init=0.0,                      /* used for states tppi in t1 */
    pwC = getval("pwC"),                              /* C13 pulse at pwClvl */
    pwClvl = getval("pwClvl"),                 /* coarse power for C13 pulse */
    compC  = getval("compC"),         /* correction for amplifier compression*/
-   pwCa180,
+  //pwCa180,
    pwCO180,
    pwCab90,
    pwCab180,
 
    pwS1,                                      /* length of square 90 on Cab */
-   phshift = getval("phshift"),    /* phase shift on Cab by 180 on CO in t1 */
+   /*phshift = getval("phshift"),*/ /* phase shift on Cab by 180 on CO in t1 */
    pwS2,                                             /* length of 180 on CO */
-   pwS3,
+   /*pwS3,*/
    pwS = getval("pwS"), /*used to change 180 on CO in t1 for 1D calibration */
-   pwZ,                                  /* the largest of pwS2 and 2.0*pwN */
-   pwZ1,              /* the largest of pwS2 and 2.0*pwN for 1D experiments */
+   /*pwZ,*/                              /* the largest of pwS2 and 2.0*pwN */
+   /*pwZ1,*/          /* the largest of pwS2 and 2.0*pwN for 1D experiments */
 
    pwNlvl = getval("pwNlvl"),                       /* power for N15 pulses */
    pwN = getval("pwN"),             /* N15 90 degree pulse length at pwNlvl */
@@ -122,7 +122,7 @@ double      d2_init=0.0,                      /* used for states tppi in t1 */
 /*   INITIALIZE VARIABLES   */
    lambda = 2.4e-3;
 
-   pwCa180=c13pulsepw("ca", "co", "square", 180.0);
+   /*pwCa180=*/c13pulsepw("ca", "co", "square", 180.0);
    pwCO180=c13pulsepw("co", "ca", "sinc", 180.0);
    pwCab90=c13pulsepw("cab","co","square",90.0);
    pwCab180=c13pulsepw("cab","co","square",180.0);
@@ -134,14 +134,14 @@ double      d2_init=0.0,                      /* used for states tppi in t1 */
 /* get calculated pulse lengths of shaped C13 pulses */
    pwS1 = c13pulsepw("cab", "co", "square", 90.0); 
    pwS2 = c13pulsepw("co", "cab", "sinc", 180.0); 
-   pwS3 = c13pulsepw("cab", "co", "square", 180.0);
+   /*pwS3 = */c13pulsepw("cab", "co", "square", 180.0);
 
 /* the 180 pulse on CO at the middle of t1 */
-   if (pwS2 > 2.0*pwN) pwZ = pwS2; else pwZ = 2.0*pwN;
-   if ((pwS==0.0) && (pwS2>2.0*pwN)) pwZ1=pwS2-2.0*pwN; else pwZ1=0.0;
+   //if (pwS2 > 2.0*pwN) pwZ = pwS2; else pwZ = 2.0*pwN;
+   //if ((pwS==0.0) && (pwS2>2.0*pwN)) pwZ1=pwS2-2.0*pwN; else pwZ1=0.0;
    if ( ni > 1 )     pwS = 180.0;
-   if ( pwS > 0 )   phshift = 140.0;
-     else           phshift = 0.0;
+   //if ( pwS > 0 )   phshift = 140.0;
+   //else             phshift = 0.0;
 
 /* CHECK VALIDITY OF PARAMETER RANGES */
 

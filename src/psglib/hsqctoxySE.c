@@ -86,8 +86,8 @@ pulsesequence()
 			gzlvl,
 			gt,
 			gstab,
-			sellvl,
-			pwxsel,
+			/*sellvl,*/
+			/*pwxsel,*/
 			cycle1,
 			shape_pw,
 			h2off,
@@ -118,8 +118,8 @@ pulsesequence()
 	satfrq = getval("satfrq");
 	satpwr = getval("satpwr");
 	hsgpwr = getval("hsgpwr");
-	sellvl = getval("sellvl");
-	pwxsel = getval("pwxsel");
+	//sellvl = getval("sellvl");
+	//pwxsel = getval("pwxsel");
 	getstr("pwxshape",pwxshape);
 	gzlvl = getval("gzlvl");
 	gstab = getval("gstab");

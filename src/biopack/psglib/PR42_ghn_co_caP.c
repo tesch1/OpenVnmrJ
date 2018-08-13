@@ -90,26 +90,26 @@ pulsesequence()
              taud,         /*  ~ 1/4JCaC' =  4.5 ms if bigTCo can be set to be
 				less than 4.5ms and then taud can be smaller*/
              zeta,        /* time for C'-N to refocuss set to 0.5*24.0 ms */
-             bigTCa,      /* Ca T period */
+             /*bigTCa,*/  /* Ca T period */
              bigTCo,      /* Co T period */
              bigTN,       /* nitrogen T period */
-             BigT1,       /* delay to compensate for gradient gt5 */
-             satpwr,     /* low level 1H trans.power for presat  */
+             /*BigT1,*/   /* delay to compensate for gradient gt5 */
+             satpwr,      /* low level 1H trans.power for presat  */
              sw1,          /* sweep width in f1                    */             
-             sw2,          /* sweep width in f2                    */             
+             /*sw2,*/          /* sweep width in f2                    */             
 	     sphase,       /* small angle phase shift */
 	     cbpwr,        /* power level for selective CB decoupling */
 	     cbdmf,        /* pulse width for selective CB decoupling */
 	     cbres,        /* decoupling resolution of CB decoupling */
 
    pwS1,                                         /* length of square 90 on Ca */
-   phshift,        /*  phase shift induced on Ca by 180 on CO in middle of t1 */
+   /*phshift,*/            /*  phase shift induced on Ca by 180 on CO in middle of t1 */
    pwS2,                                               /* length of 180 on CO */
    pwS3,                                              /* length of 180 on Ca  */
-   pwS4,                                             /* length of 90 on CO */
-   pwS = getval("pwS"), /* used to change 180 on CO in t1 for 1D calibrations */
+   /*pwS4,*/                                             /* length of 90 on CO */
+   /*pwS = getval("pwS"),*/ /* used to change 180 on CO in t1 for 1D calibrations */
    pwZ,                                    /* the largest of pwS2 and 2.0*pwN */
-   pwZ1,                /* the largest of pwS2 and 2.0*pwN for 1D experiments */
+   /*pwZ1,*/                /* the largest of pwS2 and 2.0*pwN for 1D experiments */
 
              gt1,
              gt2,
@@ -134,7 +134,7 @@ pulsesequence()
              gzlvl8, 
              gzlvl9, 
              gzlvl10, 
-             gzlvl11, 
+             //gzlvl11, 
              gzlvl12,
 
              compH = getval("compH"),         /* adjustment for amplifier compression */
@@ -169,15 +169,15 @@ pulsesequence()
   tauc   = getval("tauc"); 
   taud   = getval("taud"); 
   zeta  = getval("zeta");
-  bigTCa = getval("bigTCa");
+  //bigTCa = getval("bigTCa");
   bigTCo = getval("bigTCo");
   bigTN = getval("bigTN");
-  BigT1 = getval("BigT1");
+  //BigT1 = getval("BigT1");
   tpwr = getval("tpwr");
   satpwr = getval("satpwr");
   dpwr = getval("dpwr");
   sw1 = getval("sw1");
-  sw2 = getval("sw2");
+  //sw2 = getval("sw2");
   sphase = getval("sphase");
 
   gt1 = getval("gt1");
@@ -204,7 +204,7 @@ pulsesequence()
   gzlvl8 = getval("gzlvl8");
   gzlvl9 = getval("gzlvl9");
   gzlvl10 = getval("gzlvl10");
-  gzlvl11 = getval("gzlvl11");
+  //gzlvl11 = getval("gzlvl11");
   gzlvl12 = getval("gzlvl12");
 
   /* Load variable */
@@ -237,14 +237,14 @@ pulsesequence()
         pwS1 = c13pulsepw("ca", "co", "square", 90.0);
         pwS2 = c13pulsepw("co", "ca", "sinc", 180.0);
         pwS3 = c13pulsepw("ca","co","square",180.0);
-        pwS4 = c13pulsepw("co", "ca", "sinc", 90.0);
+        /*pwS4 = */c13pulsepw("co", "ca", "sinc", 90.0);
 
     /* the 180 pulse on CO at the middle of t1 */
         if (pwS2 > 2.0*pwN) pwZ = pwS2; else pwZ = 2.0*pwN;
-        if ((pwS==0.0) && (pwS2>2.0*pwN)) pwZ1=pwS2-2.0*pwN; else pwZ1=0.0;
-        if ( ni > 1 )     pwS = 180.0;
-        if ( pwS > 0 )   phshift = 140.0;
-        else             phshift = 0.0;
+        //if ((pwS==0.0) && (pwS2>2.0*pwN)) pwZ1=pwS2-2.0*pwN; else pwZ1=0.0;
+        //if ( ni > 1 )     pwS = 180.0;
+        //if ( pwS > 0 )   phshift = 140.0;
+        //else             phshift = 0.0;
 
    tpwrs = tpwr - 20.0*log10(pwHs/(compH*pw*1.69));   /*needs 1.69 times more*/
    tpwrs = (int) (tpwrs);                          /*power than a square pulse */

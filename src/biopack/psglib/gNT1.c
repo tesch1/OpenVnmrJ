@@ -71,7 +71,7 @@ pulsesequence()
  int	     t1_counter;
 
  double   
-             tau1,                  /* t1/2  */
+  	     /*tau1,*/                  /* t1/2  */
   	     taua = getval("taua"),     /* 2.25ms  */
   	     taub = getval("taub"),     /* 2.75ms  */
              time_T1,
@@ -199,7 +199,7 @@ pulsesequence()
       d2_init = d2;
       t1_counter = (int) ( (d2-d2_init)*sw1 + 0.5);
 
-      tau1=0.5*d2;	
+      //tau1=0.5*d2;	
 	
       if(t1_counter %2) {
         tsadd(t2,2,4);

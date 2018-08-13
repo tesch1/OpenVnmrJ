@@ -60,11 +60,11 @@ pulsesequence()
 		gstab = getval("gstab"),
 		compH = getval("compH");
 	char	sspul[MAXSTR], pshape[MAXSTR];
-	int	iphase;
+	//int	iphase;
         shape  hdx;
 
 	getstr("sspul",sspul);
-	iphase = (int)(getval("phase")+0.5);
+	//iphase = (int)(getval("phase")+0.5);
 
   /* Make HADAMARD encoding waveforms */
   

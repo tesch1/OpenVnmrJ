@@ -304,7 +304,7 @@ pulsesequence()
              gzlvl5,
              gzlvl6,
              gzlvl7,
-             gzlvl8,
+             //gzlvl8,
              gzlvl9,
              gzlvl10,
              gzlvl11,
@@ -388,7 +388,7 @@ pulsesequence()
   gzlvl5 = getval("gzlvl5");
   gzlvl6 = getval("gzlvl6");
   gzlvl7 = getval("gzlvl7");
-  gzlvl8 = getval("gzlvl8");
+  //gzlvl8 = getval("gzlvl8");
   gzlvl9 = getval("gzlvl9");
   gzlvl10 = getval("gzlvl10");
   gzlvl11 = getval("gzlvl11");

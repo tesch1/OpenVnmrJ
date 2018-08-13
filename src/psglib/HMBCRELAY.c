@@ -46,6 +46,7 @@ pulsesequence()
 
   char       sspul[MAXSTR], fad[MAXSTR],  satmode[MAXSTR],
                 shapedpulse[MAXSTR], comm[MAXSTR];
+  int ret __attribute__((unused));
 
   gtE = getval("gtE");
   gzlvlE = getval("gzlvlE");
@@ -82,7 +83,7 @@ pulsesequence()
     if((getval("arraydim") < 1.5) || (ix==1))        /* execute only once */
      { sprintf(comm, "Pbox ad180 -u %s -w \"cawurst-10 %.1f/%.6f\" -s 1.0 -0\n",userdir,
              1.0/pwx, 30*pwx);
-             system(comm);                         /* create adiabatic 180 pulse */
+             ret = system(comm);                     /* create adiabatic 180 pulse */
      }
    }
 

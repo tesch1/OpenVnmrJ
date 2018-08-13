@@ -59,7 +59,7 @@ pulsesequence()
 		   zqfpw3 = getval("zqfpw3"),
 		   zqfpwr3 = getval("zqfpwr3"),
 		   gzlvlzq3 = getval("gzlvlzq3"),
-		   mixNcorr,
+		   //mixNcorr,
 		   sweeppw = getval("sweeppw"),
 		   sweeppwr = getval("sweeppwr");
    char		   sweepshp[MAXSTR],
@@ -82,9 +82,9 @@ pulsesequence()
    getstr("selshapeB",selshapeB);
    getstr("zqfpat3",zqfpat3);
 
-   mixNcorr=0.0;
-   if (getflag("Gzqfilt"))
-	mixNcorr=getval("zqfpw3");
+  //mixNcorr=0.0;
+  //if (getflag("Gzqfilt"))
+  //   mixNcorr=getval("zqfpw3");
 
   assign(ct,v17);
   assign(zero,v18);

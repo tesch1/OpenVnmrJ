@@ -69,7 +69,7 @@ pulsesequence()
             C_flg[MAXSTR],
             dtt_flg[MAXSTR];
 
- int         phase, phase2, ni, ni2, 
+ int         phase, phase2, /*ni,*/ ni2, 
              t1_counter,   /* used for states tppi in t1           */ 
              t2_counter;   /* used for states tppi in t2           */ 
 
@@ -117,7 +117,7 @@ pulsesequence()
              tof_dtt,
 
              rfrb_co, 
-             pwrb_co,                           
+             //pwrb_co,
              rfca90,
              pwca90,
              rfca180,
@@ -150,7 +150,7 @@ pulsesequence()
   phase2 = (int) ( getval("phase2") + 0.5);
   sw1 = getval("sw1");
   sw2 = getval("sw2");
-  ni = getval("ni");
+  //ni = getval("ni");
   ni2 = getval("ni2");
 
   gt0 = getval("gt0");
@@ -194,7 +194,7 @@ pulsesequence()
     if(taua < (gt4+gstab +6e-6+pwHs)) printf("gt4 or pwHs may be too long! ");
   }
   pwcrb180 = rb180.pw;   rfrb = rb180.pwrf;             /* set up parameters */
-  pwrb_co = rb180_co.pw; rfrb_co = rb180_co.pwrf;       /* set up parameters */
+  /*pwrb_co = rb180_co.pw; */ rfrb_co = rb180_co.pwrf;       /* set up parameters */
   pwca90 = ca90.pw;      rfca90 = ca90.pwrf;            /* set up parameters */
   pwca180 = ca180.pw;    rfca180 = ca180.pwrf;          /* set up parameters */
   pwco90 = pwca90;

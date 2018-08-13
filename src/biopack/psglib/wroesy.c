@@ -140,7 +140,7 @@ pulsesequence()
 		   satdly,
                    cycles,
                    wetpw=getval("wetpw"),dz=getval("dz"),
-                   wetpwr=getval("wetpwr"),gtw,gswet;
+                   wetpwr=getval("wetpwr")/*,gtw*/,gswet;
 
    int             iphase;
 
@@ -153,7 +153,7 @@ pulsesequence()
 
 /* LOAD VARIABLES */
   wetpw=getval("wetpw");        /* User enters power for 90 deg. */
-  gtw=getval("gtw");            /* Z-Gradient duration           */
+  /*gtw=getval("gtw");*/        /* Z-Gradient duration           */
   gswet=getval("gswet");        /* Post-gradient stability delay */
    getstr("wetshape", wetshape);
    getstr("autosoft", autosoft);

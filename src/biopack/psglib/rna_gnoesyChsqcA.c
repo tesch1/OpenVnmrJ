@@ -192,7 +192,7 @@ double
                                  /* temporary Pbox parameters */
   bw, pws, ofs, nst,  /* bandwidth, pulsewidth, offset, ppm, # steps */
 
-            rf0,                        /* full fine power */
+            /*rf0,*/                        /* full fine power */
             compC = getval("compC"),         /* adjustment for C13 amplifier compression */
              tau1,         /*  t1 delay */
              tau2,         /*  t2 delay */
@@ -201,8 +201,8 @@ double
              pwN,          /* PW90 for 15N pulse              */
              pwC,          /* PW90 for c nucleus @ pwClvl         */
              pwC180,       /* PW180 for c nucleus in INEPT transfers */
-             pwClvl,        /* power level for 13C pulses on dec1  */
-             pwNlvl,       /* high dec2 pwr for 15N hard pulses    */
+             pwClvl,       /* power level for 13C pulses on dec1  */
+             /*pwNlvl,*/   /* high dec2 pwr for 15N hard pulses    */
              mix,          /* noesy mix time                       */
              sw1,          /* spectral width in t1 (H)             */
              sw2,          /* spectral width in t2 (C) (3D only)   */
@@ -221,10 +221,7 @@ double
              gzlvl2, 
              gzlvl3, 
              gzlvl4, 
-             gzlvl5,
-             gzlvl6,
-             gzlvl7; 
-
+             gzlvl5;
 
 /* LOAD VARIABLES */
 
@@ -251,7 +248,7 @@ double
   pwC180 = getval("pwC180");  
   pwN = getval("pwN");
   pwClvl = getval("pwClvl");
-  pwNlvl = getval("pwNlvl");
+  //pwNlvl = getval("pwNlvl");
   gzcal = getval("gzcal");
   gt0 = getval("gt0");
   gt1 = getval("gt1");
@@ -267,8 +264,8 @@ double
   gzlvl3 = getval("gzlvl3");
   gzlvl4 = getval("gzlvl4");
   gzlvl5 = getval("gzlvl5");
-  gzlvl6 = getval("gzlvl6");
-  gzlvl7 = getval("gzlvl7");
+  //gzlvl6 = getval("gzlvl6");
+  //gzlvl7 = getval("gzlvl7");
 
 /* LOAD PHASE TABLE */
   settable(t1,8,phi1);
@@ -394,7 +391,7 @@ double
     }
 
 /* maximum fine power for pwC pulses */
-   rf0 = 4095.0;
+   //rf0 = 4095.0;
 
    setautocal();                        /* activate auto-calibration flags */ 
         

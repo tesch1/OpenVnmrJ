@@ -72,7 +72,7 @@ static int ph10[8] = {0,2,2,0,0,2,2,0};
 
 void pulsesequence()
 {
-  double j,pwxpwr,gzlvl1,gt1,gzlvl2,gt2,gzlvl3,gt3,grise,gstab,phase;
+  double j,pwxpwr,gzlvl1,gt1,gzlvl2,gt2,gzlvl3,gt3,grise/*,gstab*/,phase;
   double taumb = 0.0;
   int  icosel,t1_counter;
   char mbond[MAXSTR];
@@ -88,7 +88,7 @@ void pulsesequence()
   gzlvl3 = getval("gzlvl3");
   gt3 = getval("gt3");
   grise = getval("grise");
-  gstab = getval("gstab");
+  //gstab = getval("gstab");
   phase = getval("phase");
   getstr("mbond", mbond);
   if (mbond[0] == 'y')

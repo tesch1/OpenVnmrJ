@@ -33,6 +33,7 @@ pulsesequence() {
 // Define Variables and Objects and Get Parameter Values
 
    int n;
+   int ret __attribute__((unused));
 
    CP hx = getcp("HX",0.0,0.0,0,1);
    strncpy(hx.fr,"dec",3);
@@ -68,7 +69,7 @@ pulsesequence() {
    if (getval("arraydim") < 1.5||(ix==1)||isarry("ofXgauss")||isarry("pwXgauss")) {
       sprintf(shXgauss.name, "%s_%d", "arr", ix);
       sprintf(cmd, "Pbox %s -w \"gaus180 %.7f %.1f\" -0\n",shXgauss.name,pwXgauss,ofXgauss);
-      system(cmd);
+      ret = system(cmd);
       shXgauss = getRsh(shXgauss.name);
    }
 

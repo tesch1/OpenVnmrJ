@@ -73,9 +73,10 @@ pulsesequence() {
    char cmd[MAXSTR];
    if (getval("arraydim") < 1.5 || (ix==1) || isarry("ofsXr2inv") ||
       isarry("pwsXr2inv")) {
+      int ret __attribute__((unused));
       sprintf(shXr2inv.name, "%s_%d", "r2inv", ix);
       sprintf(cmd, "Pbox %s -w \"rsnob %.7f %.1f\" -0\n", shXr2inv.name, pwsXr2inv, ofsXr2inv);
-      system(cmd);
+      ret = system(cmd);
       shXr2inv = getRsh(shXr2inv.name);
    }
 

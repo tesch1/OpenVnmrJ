@@ -69,7 +69,7 @@ pulsesequence()
          gstab = getval("gstab"),
 	 grad1,
 	 grad2,
-         tau,
+	 //tau,
 	 tauA,
          tauB,
 	 impress = getval("impress"),
@@ -95,7 +95,7 @@ pulsesequence()
   tauA = 1/(2*(j1min + 0.146*(j1max - j1min)));
   tauB = 1/(2*(j1max - 0.146*(j1max - j1min)));
   taumb = 1 / (2 * (getval("jnxh")));
-  tau = 1 / (j1min+j1max);
+  //tau = 1 / (j1min+j1max);
 
   icosel = 1;
 

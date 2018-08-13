@@ -204,9 +204,9 @@ double      p_d,
 /* directly from your shapelib.                    			      */
    pwC3 = getval("pwC3"),  /*180 degree pulse at Ca(56ppm) null at CO(174ppm) */
    pwC3a = getval("pwC3a"),    /* pwC3a=pwC3, but not set to zero when pwC3=0 */
-   phshift3,             /* phase shift induced on CO by pwC3 ("offC3") pulse */
-   pwZ,					   /* the largest of pwC3 and 2.0*pwN */
-   pwZ1,	       /* the largest of pwC3a and 2.0*pwN for 1D experiments */
+   /*phshift3,*/         /* phase shift induced on CO by pwC3 ("offC3") pulse */
+   /*pwZ,*/				   /* the largest of pwC3 and 2.0*pwN */
+   /*pwZ1,*/	       /* the largest of pwC3a and 2.0*pwN for 1D experiments */
    pwC6 = getval("pwC6"),     /* 90 degree selective sinc pulse on CO(174ppm) */
    pwC8 = getval("pwC8"),    /* 180 degree selective sinc pulse on CO(174ppm) */
    rf3,	                           /* fine power for the pwC3 ("offC3") pulse */
@@ -283,11 +283,11 @@ double      p_d,
 
     /* the pwC3 pulse at the middle of t1  */
 	if ((ni2 > 0.0) && (ni == 1.0)) ni = 0.0;
-        if (pwC3a > 2.0*pwN) pwZ = pwC3a; else pwZ = 2.0*pwN;
-        if ((pwC3==0.0) && (pwC3a>2.0*pwN)) pwZ1=pwC3a-2.0*pwN; else pwZ1=0.0;
+        //if (pwC3a > 2.0*pwN) pwZ = pwC3a; else pwZ = 2.0*pwN;
+        //if ((pwC3==0.0) && (pwC3a>2.0*pwN)) pwZ1=pwC3a-2.0*pwN; else pwZ1=0.0;
 	if ( ni > 1 )     pwC3 = pwC3a;
-	if ( pwC3 > 0 )   phshift3 = 48.0;
-	else              phshift3 = 0.0;
+	//if ( pwC3 > 0 )   phshift3 = 48.0;
+	//else              phshift3 = 0.0;
 
     /* 90 degree one-lobe sinc pulse on CO, null at Ca 118ppm away */
 	rf6 = (compC*4095.0*pwC*1.69)/pwC6;	/* needs 1.69 times more     */

@@ -191,7 +191,7 @@ pulsesequence()
              sw3,          /* sweep width in f3                    */             
              pw_sl,        /* selective pulse on water      */
              tpwrsl,       /* power for pw_sl               */
-             at,
+             //at,
              sphase,	   /* small angle phase shift  */
              sphase1,
              phase_sl,
@@ -277,7 +277,7 @@ pulsesequence()
   ni = getval("ni");
   pw_sl = getval("pw_sl");
   tpwrsl = getval("tpwrsl");
-  at = getval("at");
+  //at = getval("at");
   sphase = getval("sphase");
   sphase1 = getval("sphase1");
   phase_sl = getval("phase_sl");

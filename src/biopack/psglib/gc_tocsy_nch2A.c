@@ -80,7 +80,7 @@ pulsesequence()
             f2180[MAXSTR],    /* Flag to start t2 @ halfdwell             */
             ch_plane[MAXSTR];    /* Flag to start t2 @ halfdwell             */
 
- int         phase, phase2, ni, ni2, ncyc,
+ int         phase, phase2/*, ni*/, ni2, ncyc,
              t1_counter,   /* used for states tppi in t1           */ 
              t2_counter;   /* used for states tppi in t2           */ 
 
@@ -169,7 +169,7 @@ pulsesequence()
   phase2 = (int) ( getval("phase2") + 0.5);
   sw1 = getval("sw1");
   sw2 = getval("sw2");
-  ni  = getval("ni");
+  //ni  = getval("ni");
   ni2  = getval("ni2");
   ncyc = getval("ncyc");
 

@@ -52,8 +52,8 @@ pulsesequence()
 
    double d2_init=0.0,
           d3_init=0.0,
-          pwS1,pwS2,pwS3,pwS4,pwS5,pwS6,
-          kappa,
+          /*pwS1,*/pwS2,pwS3,pwS4,pwS5,pwS6,
+          //kappa,
           lambda = getval("lambda"),
           gzlvl1 = getval("gzlvl1"),
           gzlvl2 = getval("gzlvl2"), 
@@ -69,7 +69,7 @@ pulsesequence()
           scale = getval("scale"),
           sw1 = getval("sw1"),
           tpwrsf = getval("tpwrsf"),
-          shlvl1,
+          //shlvl1,
           shpw1 = getval("shpw1"),
           pwC = getval("pwC"),
           pwClvl = getval("pwClvl"),
@@ -110,13 +110,13 @@ pulsesequence()
 
 
 /*   INITIALIZE VARIABLES   */
-   kappa = 5.4e-3;
+   //kappa = 5.4e-3;
    //shpw1 = pw*8.0;
-   shlvl1 = tpwr;
+   //shlvl1 = tpwr;
    f1180[0] ='n'; 
    f2180[0] ='n'; 
 
-   pwS1 = c13pulsepw("co", "ca", "sinc", 90.0);
+   /*pwS1 = */c13pulsepw("co", "ca", "sinc", 90.0);
    pwS2 = c13pulsepw("co", "ca", "sinc", 180.0);
    pwS3 = c13pulsepw("ca", "co", "square", 180.0);
    pwS4 = h_shapedpw("eburp2",shbw,shofs,zero, 0.0, 0.0);

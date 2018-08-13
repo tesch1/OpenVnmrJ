@@ -45,12 +45,13 @@ pulsesequence()
 {
    double   pwxlvl, pwx, gtE,EDratio, gzlvlE, gstab,
                 sw1, j1xh, jnxh, jhh, tau4, taumb, tauhh,
-                 phase, hsgt, hsglvl, satdly, satpwr, satfrq, shapedpower;
+     phase/*, hsgt, hsglvl*/, satdly/*, satpwr, satfrq*/, shapedpower;
 
-  int          iphase, t1_counter;
+  int        iphase, t1_counter;
+  int        ret __attribute__((unused));
 
   char       sspul[MAXSTR], fad[MAXSTR],  satmode[MAXSTR],
-                shapedpulse[MAXSTR], comm[MAXSTR];
+             shapedpulse[MAXSTR], comm[MAXSTR];
 
   gtE = getval("gtE");
   gzlvlE = getval("gzlvlE");
@@ -59,16 +60,16 @@ pulsesequence()
   pwx    = getval("pwx");
   shapedpower = getval("shapedpower");
   sw1 = getval("sw1");
-  hsglvl = getval("hsglvl");
-  hsgt = getval("hsgt");
+  //hsglvl = getval("hsglvl");
+  //hsgt = getval("hsgt");
   gstab = getval("gstab");
   j1xh = getval("j1xh");
   jnxh = getval("jnxh");
   jhh = getval("jhh");
   phase = getval("phase");
   satdly = getval("satdly");
-  satpwr = getval("satpwr");
-  satfrq = getval("satfrq");
+  //satpwr = getval("satpwr");
+  //satfrq = getval("satfrq");
 
   getstr("sspul",sspul);
   getstr("satmode",satmode);
@@ -87,7 +88,7 @@ pulsesequence()
     if((getval("arraydim") < 1.5) || (ix==1))        /* execute only once */
      { sprintf(comm, "Pbox ad180 -w \"cawurst-10 %.1f/%.6f\" -s 1.0 -0\n",
              1.0/pwx, 30*pwx);
-             system(comm);                         /* create adiabatic 180 pulse */
+             ret = system(comm);                     /* create adiabatic 180 pulse */
      }
    }
 

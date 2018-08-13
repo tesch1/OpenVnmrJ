@@ -32,6 +32,7 @@ static int table7[16] = {0,1,0,1,1,0,1,0};  //phYxy8
 pulsesequence() {
 
 // Define Variables and Objects and Get Parameter Values
+   int ret __attribute__((unused));
 
    CP hx = getcp("HX",0.0,0.0,0,1);
    strncpy(hx.fr,"dec",3);
@@ -90,14 +91,14 @@ pulsesequence() {
    if (getval("arraydim") < 1.5 || (ix==1) || isarry("ofXg") || isarry("pwXg")) {
       sprintf(shXg.name, "%s_%d", "arr", ix);
       sprintf(cmd, "Pbox %s -w \"sinc180r %.7f %.1f\" -0\n", shXg.name, pwXg, ofXg);
-      system(cmd);
+      ret = system(cmd);
       shXg = getRsh(shXg.name);
    }
 
    if (getval("arraydim") < 1.5 || (ix==1) || isarry("ofYg") || isarry("pwYg")) {
       sprintf(shYg.name, "%s_%d", "crr", ix);
       sprintf(cmd, "Pbox %s -w \"sinc180r %.7f %.1f\" -0\n", shYg.name, pwYg, ofYg);
-      system(cmd);
+      ret = system(cmd);
       shYg = getRsh(shYg.name);
    }
 

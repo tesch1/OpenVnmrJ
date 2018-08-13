@@ -82,7 +82,7 @@ pulsesequence()
              jhc2,         /* largest coupling that you wish to purge */
              taud,         /* 1/(2jhc1)   */
              taue,         /* 1/(2jhc2)   */
-             tauch,        /* taua/2.0              */ 
+             /*tauch,*/    /* taua/2.0              */ 
 
              gt1,
              gt2,
@@ -90,9 +90,9 @@ pulsesequence()
              gt4,
              gt5,
              gstab,gzlvl1, 
-             gzlvl2, 
+             //gzlvl2, 
              gzlvl3, 
-             gzlvl4, 
+             //gzlvl4, 
              gzlvl5; 
 
 /* LOAD VARIABLES */
@@ -116,7 +116,7 @@ pulsesequence()
   jhc1 = getval("jhc1");
   jhc2 = getval("jhc2");
 
-  tauch = taua/2.0;
+  //tauch = taua/2.0;
 
   gt1 = getval("gt1");
   gt2 = getval("gt2");
@@ -126,9 +126,9 @@ pulsesequence()
 
   gstab = getval("gstab");
   gzlvl1 = getval("gzlvl1");
-  gzlvl2 = getval("gzlvl2");
+  //gzlvl2 = getval("gzlvl2");
   gzlvl3 = getval("gzlvl3");
-  gzlvl4 = getval("gzlvl4");
+  //gzlvl4 = getval("gzlvl4");
   gzlvl5 = getval("gzlvl5");
 
 /* LOAD PHASE TABLE */

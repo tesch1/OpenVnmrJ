@@ -116,7 +116,6 @@ pulsesequence()
     gt4,
     gt5,
     gt6,
-    gt7,
     gt8, 
 
     gzlvl1,
@@ -125,7 +124,6 @@ pulsesequence()
     gzlvl4,
     gzlvl5,
     gzlvl6,   /* C13 selection gradient level in DAC units */
-    gzlvl7,
     gzlvl8,
     gzlvl9,   /* H1 gradient level in DAC units            */
     rf0,
@@ -172,7 +170,6 @@ pulsesequence()
     gt4 = getval("gt4");
     gt5 = getval("gt5");
     gt6 = getval("gt6");
-    gt7 = getval("gt7");
     gt8 = getval("gt8");
     gstab = getval("gstab");
  
@@ -182,7 +179,6 @@ pulsesequence()
     gzlvl4 = getval("gzlvl4");
     gzlvl5 = getval("gzlvl5");
     gzlvl6 = getval("gzlvl6");
-    gzlvl7 = getval("gzlvl7");
     gzlvl8 = getval("gzlvl8");
     gzlvl9 = getval("gzlvl9");
 
