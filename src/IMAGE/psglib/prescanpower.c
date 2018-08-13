@@ -24,7 +24,7 @@ static int phr[4] = {0,2,1,3};              /* receiver phase */
 pulsesequence() {
   /* Internal variable declarations *********************/
   double  freq90[MAXNSLICE],freq180[MAXNSLICE];
-  int     shape90,shape180;
+  int     shape90/*,shape180*/;
   double  minTE, te_delay1, te_delay2, minTR, tr_delay;
   double  tref, te1, te2;
   int     tpwr1f, tpwr2f;
@@ -98,7 +98,7 @@ pulsesequence() {
   offsetlist(pss,ss_grad.ssamp,0,freq90,ns,seqcon[1]);
   offsetlist(pss,ss2_grad.ssamp,0,freq180,ns,seqcon[1]);
   shape90  = shapelist(p1pat,ss_grad.rfDuration,freq90,ns,0,seqcon[1]);
-  shape180 = shapelist(p2pat,ss2_grad.rfDuration,freq180,ns,0,seqcon[1]);
+/*shape180=*/shapelist(p2pat,ss2_grad.rfDuration,freq180,ns,0,seqcon[1]);
 
 
   /* PULSE SEQUENCE *************************************/

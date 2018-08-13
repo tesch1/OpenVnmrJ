@@ -43,7 +43,7 @@ pulsesequence() {
   double  trperiod,trfill=0.0,maxne,tscale,fifopad=0.0;
   int     singlerr=FALSE,vflip;
   char    fliptable[MAXSTR];
-  int     flip[100];
+  //int     flip[100];
 
   /* Real-time variables used in this sequence **************/
   int  vpe_steps    = v1;      // Number of PE steps
@@ -249,10 +249,10 @@ pulsesequence() {
   /* Using Eq. 8 in Williams et al, JMRI 2001, 14(?), 374-382 */
   /************************************************************/
   /* NB not yet implimented */
-  for (i=0; i<ne-1; i++) {
-    flip[i] = (int)(atan(1/sqrt(ne-i+1))/(PI/2)*32767);
-  }
-  flip[(int)ne-1] = 32767;
+  //for (i=0; i<ne-1; i++) {
+  //  flip[i] = (int)(atan(1/sqrt(ne-i+1))/(PI/2)*32767);
+  //}
+  //flip[(int)ne-1] = 32767;
 //  settable(t2,(int)ne,flip);
 //  vflip = 1;
 

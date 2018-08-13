@@ -73,7 +73,8 @@ pulsesequence() {
     etl=1; kzero=1; nv=nv2;
   } else {
     /* Check kzero is valid *****************************/
-    if (kzero<1) kzero=1; if (kzero>etl) kzero=etl;
+    if (kzero<1) kzero=1;
+    if (kzero>etl) kzero=etl;
     putCmd("kzero = %d",(int)kzero); 
   }
 

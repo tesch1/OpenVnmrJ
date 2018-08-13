@@ -32,12 +32,12 @@ pulsesequence() {
   int     shape90,shape180;
   double  minTE, te_delay1, te_delay2, minTR, tr_delay;
   double  tref, te1, te2;
-  int     tpwr1f, tpwr2f;
+  int     /*tpwr1f, */tpwr2f;
     
   /*  Initialize paramter ****************************/
   init_mri();
 
-  tpwr1f = (int) getval("tpwr1f");
+  //tpwr1f = (int) getval("tpwr1f");
   tpwr2f = (int) getval("tpwr2f");
 
   if ((nv > 0) && (profile[0] == 'n'))

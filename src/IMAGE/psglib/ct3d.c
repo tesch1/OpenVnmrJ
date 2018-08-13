@@ -23,7 +23,7 @@ pulsesequence()
 { 
   double  aqtm     = getval("aqtm");      /* "extra" sampling time for filters */
   double  acqdelay = getval("acqdelay");  /* minimum delay between echoes */
-  double  gamma,sgro,sgpe1,sgpe2,gro,gpe1,gpe2,
+  double  gamma,sgro,sgpe1,sgpe2/*,gro*/,gpe1,gpe2,
           dw,te_delay,tr_delay;
   double  glimf,tset;
 	  
@@ -63,7 +63,7 @@ pulsesequence()
   dw = 1.0/sw;
 
   /* Gradient stepsize and max amplitude */
-  sgro  = 1/(gamma*te*lro);  gro  = sgro*np/4;
+  sgro  = 1/(gamma*te*lro);  //gro  = sgro*np/4;
   sgpe1 = 1/(gamma*te*lpe);  gpe1 = sgpe1*nv/2;
   sgpe2 = 1/(gamma*te*lpe2); gpe2 = sgpe2*nv2/2;
   te_delay = te - (p1/2.0) - rof2 - alfa; 

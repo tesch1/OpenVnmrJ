@@ -24,11 +24,11 @@ pulsesequence()
     /* Internal variable declarations                      */
     /*******************************************************/
     double  predelay;
-    double  agss,grate,gssint, gssrint;      
+    double  agss,grate,gssint/*, gssrint*/;
     double  t_after, acq_delay, min_tr;
-    double  t_rampslice, t_plateau_sr, t_plateau_min, t_ramp_sr;
-    double  slice_offset,f_offset;
-    double  pss0;
+    double  t_rampslice, t_plateau_sr, /*t_plateau_min,*/ t_ramp_sr;
+    double  /*slice_offset,*/f_offset;
+    //double  pss0;
 
     char     slice_select[MAXSTR];
  
@@ -41,10 +41,10 @@ pulsesequence()
     gssf      = 1.0;                        /* slice select fractional refocus */
     predelay  = PREDELAY;                   /* define predelay [s] */
     acq_delay = ACQ_DELAY;                  /* time delay between end of refocus and acq */
-    slice_offset = 0.0;                     /* force slice offset to 0.0 [cm] */
+    /*slice_offset = 0.0;*/                 /* force slice offset to 0.0 [cm] */
     t_rampslice = 0.0;			    /* slice select ramp time */
     t_ramp_sr   = 0.0;                      /* slice refocusing ramp time */
-    t_plateau_min = 0.0005;                 /* min time slice refocusing plateau */
+    /*t_plateau_min = 0.0005;*/             /* min time slice refocusing plateau */
     t_plateau_sr  =0.0;                     /* slice refocusing plateau time*/
     f_offset=getval("resto");
 
@@ -60,7 +60,7 @@ pulsesequence()
     /* Get parameter           */
     /***************************/  
     at = getval("at");
-    pss0 = getval("pss0");    
+    //pss0 = getval("pss0");    
 					       
     getstr("slice_select",slice_select);      /* slice select flag
                                                [y] = ON, [n] = OFF */
@@ -70,7 +70,7 @@ pulsesequence()
     /*******************************************************/
     t_rampslice = grate * agss;
     gssint = (agss*p1/2.0) + (agss*t_rampslice/2.0);
-    gssrint=gssint;
+    //gssrint=gssint;
     /*******************************************************
      * Calculate slice refocussing gradient                *
      *******************************************************/
@@ -81,7 +81,7 @@ pulsesequence()
        gssr = sqrt(gssint / grate);
        }  
     t_ramp_sr = gssr * grate;           /* ramp time for refocusing gradient*/
-    gssrint = (gssr * t_plateau_sr) + (t_ramp_sr * gssr);	    
+    //gssrint = (gssr * t_plateau_sr) + (t_ramp_sr * gssr);	    
 
     /***************************************************************************
      * timing calculation                                                      *

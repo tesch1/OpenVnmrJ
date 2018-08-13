@@ -34,7 +34,7 @@
   double restol, resto_local,csd_ppm;
   char profile_ovs[MAXSTR];
   char profile_vox[MAXSTR];
-  int    wsfirst; //wsfirst makes ws unit to be exececuted first
+  //int    wsfirst; //wsfirst makes ws unit to be exececuted first
 
   int isis;
   int counter,noph;
@@ -85,8 +85,8 @@
   getstr("autoph",autoph);
   getstr("pcflag",pcflag);
   getstr("profile_ovs",profile_ovs);
-   getstr("profile_vox",profile_vox);
-  wsfirst=(int)getval("wsfirst");
+  getstr("profile_vox",profile_vox);
+  //wsfirst=(int)getval("wsfirst");
 
   restol=getval("restol");   //local frequency offset
   roff=getval("roff");       //receiver offset

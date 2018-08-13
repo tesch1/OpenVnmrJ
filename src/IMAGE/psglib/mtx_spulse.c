@@ -37,6 +37,9 @@ in the parts of fidelity that have to do with matlab calls.
 /* floating point comparison macros */
 #define EPSILON 1e-9      /* largest allowable deviation due to floating */
                                         /* point storage */
+#ifdef FP_GT
+#undef FP_GT
+#endif
 #define FP_GT(A,B) (((A) > (B)) && (fabs((A) - (B)) > EPSILON)) /* A greater than B */
 
 pulsesequence()
@@ -63,7 +66,7 @@ pulsesequence()
 	int my_on_off[64];
 	double mytmp;
 	int my_numrfch;
-	int my_retval;
+	//int my_retval;
 
 
 	
@@ -163,7 +166,7 @@ pulsesequence()
 
 //SAS get the parameter arrays into the local arrays
 
-     my_retval=(int)getarray("my_tpwr",my_tpwr);
+     /*my_retval=(int)*/getarray("my_tpwr",my_tpwr);
 
 /*
 	printf("my tpwr0 was: %e\n",my_tpwr[0]);
@@ -176,7 +179,7 @@ pulsesequence()
 	printf("my tpwr7 was: %e\n",my_tpwr[7]);
 */
 
-     my_retval=(int)getarray("my_on_off",my_tpwrf); //dump the array of reals into a real array
+     /*my_retval=(int)*/getarray("my_on_off",my_tpwrf); //dump the array of reals into a real array
 
 	for(i=0;i<my_numrfch;i++) my_on_off[i] = (int)my_tpwrf[i]; //convert to integer
 

@@ -21,7 +21,7 @@ pulsesequence()
   double  freqEx[MAXNSLICE];
   double  pespoil_amp,spoilMoment,maxgradtime,pe2_offsetamp=0.0,nvblock;
   double  tetime,te_delay,tr_delay,perTime;
-  int     table=0,shapeEx=0,sepSliceRephase=0,image,blocknvs;
+  int     /*table=0,*/shapeEx=0,sepSliceRephase=0,image,blocknvs;
   char    spoilflag[MAXSTR],perName[MAXSTR],slab[MAXSTR];
 
   /* Real-time variables used in this sequence **************/
@@ -53,7 +53,7 @@ pulsesequence()
   /*  Check for external PE table ***************************/
   if (strcmp(petable,"n") && strcmp(petable,"N") && strcmp(petable,"")) {
     loadtable(petable);
-    table = 1;
+    //table = 1;
   }
 
   if (ns > 1)  abort_message("No of slices must be set to one");   

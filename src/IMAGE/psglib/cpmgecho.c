@@ -37,7 +37,7 @@ pulsesequence()
 { 
   double  aqtm     = getval("aqtm");      /* "extra" sampling time for filters */
   double  acqdelay = getval("acqdelay");  /* minimum delay between echoes */
-  double  r1,r2,r3,r,pd,seqtime,dw;
+  double  r1,r2,r3/*,r*/,pd,seqtime,dw;
   double restol, resto_local;
 	  
   int     vnp      = v1;
@@ -61,7 +61,7 @@ pulsesequence()
    r1 = (te/2)-(p1/2)-rof2-rof1-(p2/2)-alfa;  /* p1-r1-p2-    */
    r2 = (te/2)-(p2/2)-rof2-(dw/2)-alfa;
    r3 = (te/2)-(p2/2)-rof1-(dw/2);
-   r = (p1/2)-rof2-rof1-(p2/2)-alfa;   /* correct delay for pulse width; assume rof1=rof2 */
+   /*r = (p1/2)-rof2-rof1-(p2/2)-alfa;*/      /* correct delay for pulse width; assume rof1=rof2 */
    if ((r1<=0)||(r2<=0)||(r3<=0))
      abort_message("%s: Inter pulse delay(te) too short. r1,r2,r3 = %f,%f,%f ms",seqfil,r1,r2,r3);
    seqtime = p1+rof1+r1+alfa+(p2+rof1+rof2+r2+r3+dw)*np/2;

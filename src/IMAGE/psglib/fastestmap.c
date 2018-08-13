@@ -51,7 +51,7 @@ pulsesequence()
   double gread, grr, gsl, gsr, grew, gspoil, u2g, gsp;
   double grise_halfsine, grise_rampup, grise_triangle;
   double kread, kslice, krew, krew_epi;
-  double vtheta, vpsi, vphi;
+  //double vtheta, vpsi, vphi;
 
   double gay0[6], gay1[6], gay2[6], gay3[6], gay4[6], gay5[6], gax6[6];
   double gax0[6], gax1[6], gax2[6], gax3[6], gax4[6], gax5[6], gay6[6];
@@ -71,9 +71,9 @@ pulsesequence()
 
 
   /**[2.2] PARAMETER READ IN FROM EXPERIMENT****************************/
-  vtheta=0.0;
-  vphi=0.0;
-  vpsi=0.0;
+  //vtheta=0.0;
+  //vphi=0.0;
+  //vpsi=0.0;
   gmax = getval("gmax");
   u2g=gmax/Grad_DAC; 
   tof = getval("resto");

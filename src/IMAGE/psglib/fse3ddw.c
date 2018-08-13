@@ -21,13 +21,13 @@ static int
 void pulsesequence() {
   /* Internal variable declarations *************************/
   int     shapelist90,shapelist180;
-  double  seqtime,tau1,tau2,tau3,te1_delay,te2_delay,te3_delay,tr_delay;
+  double  seqtime,tau1,tau2,tau3/*,te1_delay*/,te2_delay,te3_delay,tr_delay;
   double  freq90[MAXNSLICE], freq180[MAXNSLICE];
   
   /* Diffusion variables */
   double  te1, te1min, del1, del2, del3, del4;
   double  te_diff1, te_diff2, tmp1, tmp2;
-  double  diffamp;
+  //double  diffamp;
   char    diffpat[MAXSTR];
   
   /* Navigator variables */
@@ -142,7 +142,7 @@ void pulsesequence() {
     init_generic(&diff_grad,"diff",gdiff,tdelta);
     if (!strcmp("sine",diffpat)) {
       diff_grad.shape = SINE;
-      diffamp         = gdiff*1;
+      //diffamp         = gdiff*1;
     }
  
     /* adjust duration, so tdelta is from start ramp up to start ramp down */   

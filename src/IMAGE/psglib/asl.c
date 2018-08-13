@@ -37,7 +37,7 @@ pulsesequence() {
   double aqtm = getval("aqtm");
 
   /* Delay variables */  
-  double tref,
+  double /*tref,*/
          te_delay1, te_delay2, tr_delay, 
 	 timin, ti1min, ti_delay, ti1_delay, tmp,
          busy1, busy2,      /* time spent on rf pulses etc. in TE periods       */

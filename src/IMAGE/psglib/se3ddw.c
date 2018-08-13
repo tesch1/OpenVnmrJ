@@ -23,7 +23,7 @@ pulsesequence()
   double  freq90[MAXNSLICE],freq180[MAXNSLICE],freqIR[MAXNSLICE];
   int     shape90=0, shape180=0, shapeIR=0;
   double  tau1, tau2, te_delay1, te_delay2, tr_delay, ti_delay = 0;
-  int     table;
+  //int     table;
 
   /* Diffusion parameters */
 #define MAXDIR 1024           /* Will anybody do more than 1024 directions or b-values? */
@@ -59,12 +59,12 @@ pulsesequence()
   init_mri();
   trmin = 0.0;
   temin = 0.0;
-  table = 0;
+  //table = 0;
 
   /*  Check for external PE table ***************************/
   if (strcmp(petable,"n") && strcmp(petable,"N") && strcmp(petable,"")) {
     loadtable(petable);
-    table = 1;
+    //table = 1;
   }
 
   /* Initialize gradient structures *************************/

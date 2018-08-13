@@ -63,7 +63,7 @@ pulsesequence(){
   double  qrsdelay, ipdelay, idelay;
   int     vflip, user_idelay;
   char    fliptable[MAXSTR];
-  int     flip[100];
+  //int     flip[100];
 
   double  maxgradtime,spoilMoment,spoilfact,perTime,tetime;
   int     sepSliceRephase,table;
@@ -251,10 +251,10 @@ pulsesequence(){
   /* Calculate RF powers to ramp up flip angle in CINE loop   */
   /* Using Eq. 8 in Williams et al, JMRI 2001, 14(?), 374-382 */
   /************************************************************/
-  for (i=0; i<ne-1; i++) {
-    flip[i] = (int)(atan(1/sqrt(ne-i+1))/(PI/2)*32767);
-  }
-  flip[(int)ne-1] = 32767;
+  //for (i=0; i<ne-1; i++) {
+  //  flip[i] = (int)(atan(1/sqrt(ne-i+1))/(PI/2)*32767);
+  //}
+  //flip[(int)ne-1] = 32767;
 /*  settable(t2,(int)ne,flip);
   vflip = 1;  */ 
 

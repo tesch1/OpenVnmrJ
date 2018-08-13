@@ -191,7 +191,7 @@ pulsesequence()
   te_d2 = te/6.0 - tau2+2*(GDELAY+rof2);
   te_d3 = te/12.0 - tau3+GDELAY+rof2;
 
-    //Calculate delta from resto to include local frequency line+ chemical shift offset
+  //Calculate delta from resto to include local frequency line+ chemical shift offset
   resto_local=resto-restol;  
 
 

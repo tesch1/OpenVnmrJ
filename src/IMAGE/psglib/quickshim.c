@@ -23,7 +23,7 @@ pulsesequence()
 	double  predelay,seqtime,glimit,gshimlim;
 	double  gbasex,gbasey,gbasez,del;
 	double  shimno;
-	double  gdaclim,shimscale;
+	double  /*gdaclim,*/shimscale;
 	double  delx,dely,delz;
 
     	del = getval("del");
@@ -33,7 +33,7 @@ pulsesequence()
 	shimno = getval("shimno");
 	shimscale = getval("shimscale");
     	gshimlim = getval("gshimlim");  /* shim dac limit */
-	gdaclim = gshimlim*shimscale;  /* gradient dac limit */
+	//gdaclim = gshimlim*shimscale;  /* gradient dac limit */
 
 //	initparms_sis();
 
