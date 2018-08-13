@@ -86,7 +86,7 @@ double
    sw1 = getval("sw1"),
    pwClvl = getval("pwClvl"), 	  	        /* coarse power for C13 pulse */
    pwC = getval("pwC"),     	      /* C13 90 degree pulse length at pwClvl */
-   rf0,            	          /* maximum fine power when using pwC pulses */
+   /*rf0,*/            	          /* maximum fine power when using pwC pulses */
    rfst,	                           /* fine power for the stCall pulse */
 
    compC = getval("compC");       /* adjustment for C13 amplifier compression */
@@ -95,7 +95,8 @@ double
    getstr("IPAP",IPAP);	 /* IPAP = 'y' for AP; IPAP = 'n' for IP */
 
 /* maximum fine power for pwC pulses (and initialize rfst) */
-	rf0 = 4095.0;    rfst=0.0;
+   //rf0 = 4095.0;
+   rfst = 0.0;
 
 /* 180 degree adiabatic C13 pulse from 0 to 200 ppm */
      if (C13refoc[A]=='y')
@@ -161,12 +162,12 @@ double
  
    if(ix == 1)
       d2_init = d2;
-      t1_counter = (int) ( (d2-d2_init)*sw1 + 0.5);
+   t1_counter = (int) ( (d2-d2_init)*sw1 + 0.5);
 
-      if(t1_counter %2) {
-        tsadd(t2,2,4);
-        tsadd(t4,2,4);
-      }
+   if(t1_counter %2) {
+      tsadd(t2,2,4);
+      tsadd(t4,2,4);
+   }
    tau1 = d2;
    tau1 = tau1/2.0 -rof1 -pw;
    if (tau1 < 0.0) tau1=0.0;

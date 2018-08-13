@@ -66,7 +66,8 @@
 
 
 /* Chess1 - CHEmical Shift Selective Suppression */
-Chess1(pulsepower,pulseshape,duration,phase,rx1,rx2,gzlvlw1,gtw1,gswet1)  double pulsepower,duration,rx1,rx2,gzlvlw1,gtw1,gswet1;
+Chess1(pulsepower,pulseshape,duration,phase,rx1,rx2,gzlvlw1,gtw1,gswet1)
+  double pulsepower,duration,rx1,rx2,gzlvlw1,gtw1,gswet1;
   codeint phase;
   char* pulseshape;
 {
@@ -158,13 +159,13 @@ pulsesequence()
 {
    double      arraydim,
                gzlvl1,gzlvl2,gt1,
-               rf0,            	          /* maximum fine power when using pwC pulses */
+               /*rf0,*/            	          /* maximum fine power when using pwC pulses */
                rfst,	                           /* fine power for the stCall pulse */
                tau1,pwN,pwNlvl,jnh,
                                /* temporary Pbox parameters */
                bw, pws, ofs, ppm, nst,  /* bandwidth, pulsewidth, offset, ppm, # steps */
-               pwC,pwClvl,jch,compH,compC,compN,
-               mix,pwwet,pwwet1,gtw,gtw1,gswet,gswet1;
+               pwC,pwClvl,jch,compC,/*compH,compN,*/
+               mix,pwwet,pwwet1,gtw,/*gtw1,*/gswet,gswet1;
    int         phase;
    char        wet[MAXSTR],sspul[MAXSTR],
                Nquiet[MAXSTR],Cquiet[MAXSTR],
@@ -184,7 +185,7 @@ pulsesequence()
    getstr("Nquiet",Nquiet);
   pwwet=getval("pwwet");        /* User enters power for 90 deg. */
   pwwet1=getval("pwwet1");        /* User enters power for 90 deg. */
-  gtw1=getval("gtw1");            /* Z-Gradient duration           */
+  //gtw1=getval("gtw1");            /* Z-Gradient duration           */
   gtw=getval("gtw");            /* Z-Gradient duration           */
   gswet=getval("gswet");        /* Post-gradient stability delay */
   gswet1=getval("gswet1");        /* Post-gradient stability delay */
@@ -196,13 +197,14 @@ pulsesequence()
    phase = (int) (getval("phase") + 0.5);
    getstr("wet", wet);
 
-   compH = getval("compH");        /* adjustment for H1 amplifier compression */
-   compN = getval("compN");       /* adjustment for N15 amplifier compression */
+   /*compH = getval("compH");*/    /* adjustment for H1 amplifier compression */
+   /*compN = getval("compN");*/   /* adjustment for N15 amplifier compression */
    compC = getval("compC");       /* adjustment for C13 amplifier compression */
 
 
 /* maximum fine power for pwC pulses (and initialize rfst) */
-	rf0 = 4095.0;    rfst=0.0;
+   //rf0 = 4095.0;
+   rfst = 0.0;
 
       setautocal();                        /* activate auto-calibration flags */ 
         

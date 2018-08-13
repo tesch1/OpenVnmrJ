@@ -182,15 +182,13 @@ pulsesequence()
 
              gstab = getval("gstab"),
 
-             gzlvl0,
              gzlvl1,
              gzlvl2,
              gzlvl3,
              gzlvl4,
              gzlvl5,
              gzlvl6,
-             gzlvl7, 
-             gzlvl8; 
+             gzlvl7; 
 
 /* LOAD VARIABLES */
 
@@ -243,7 +241,6 @@ pulsesequence()
   gt7 = getval("gt7");
   gt8 = getval("gt8");
 
-  gzlvl0 = getval("gzlvl0");
   gzlvl1 = getval("gzlvl1");
   gzlvl2 = getval("gzlvl2");
   gzlvl3 = getval("gzlvl3");
@@ -251,7 +248,6 @@ pulsesequence()
   gzlvl5 = getval("gzlvl5");
   gzlvl6 = getval("gzlvl6");
   gzlvl7 = getval("gzlvl7");
-  gzlvl8 = getval("gzlvl8");
 
   if(autocal[0]=='n')
   {     
@@ -289,18 +285,18 @@ pulsesequence()
 /* CHECK VALIDITY OF PARAMETER RANGES */
 
 
-   if(shared_CT[A] == 'n')
+  if(shared_CT[A] == 'n')
     if( bigTN - ((ni2-1)*0.5/sw2) < 0.2e-6 )
     {
         printf(" ni2 is too big\n");
         psg_abort(1);
     }
 
-    if((dm[A] == 'y' || dm[B] == 'y' || dm[C] == 'y'))
-    {
+  if((dm[A] == 'y' || dm[B] == 'y' || dm[C] == 'y'))
+  {
         printf("incorrect dec1 decoupler flags!  ");
         psg_abort(1);
-    }
+  }
 
     if((dm2[A] == 'y' || dm2[B] == 'y' || dm2[C] == 'y'))
     {
@@ -376,12 +372,12 @@ pulsesequence()
     if(nietl_flg[A] == 'y' && sel_flg[A] == 'y') {
         printf("Both nietl_flg and sel_flg cannot be y\n");
         psg_abort(1);
-     }
+    }
 
     if (fc180[A] =='y' && ni > 1.0) {
        text_error("must set fc180='n' to allow Calfa evolution (ni>1)\n");
        psg_abort(1);
-   }
+    }
 
 
 /*  Phase incrementation for hypercomplex 2D data */

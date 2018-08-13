@@ -618,22 +618,24 @@ if ((wet[A] == 'y') && (swet[A] == 'n'))
     if (mfsat[A] == 'y')
       {obsunblank(); mfpresat_on(); delay(d1); mfpresat_off(); obsblank();  obspower(tpwr);}
     else
-     delay(d1);
+      delay(d1);
   status(B);
     if (autosoft[A] == 'y') 
-     { 
+    { 
          /* selective H2O one-lobe sinc pulse */
       wetpwr = tpwr - 20.0*log10(wetpw/(pw*compH*1.69));  /* sinc needs 1.69 times longer */
       wetpwr = (int) (wetpwr+0.5);                   /* power than a square pulse */
-      Wet4(wetpwr,"H2Osinc",wetpw,t1,t2); delay(dz); 
-     } 
+      Wet4(wetpwr,"H2Osinc",wetpw,t1,t2);
+      delay(dz); 
+    } 
     else
-     Wet4(wetpwr,wetshape,wetpw,t1,t2); delay(dz); 
+      Wet4(wetpwr,wetshape,wetpw,t1,t2);
+    delay(dz); 
   status(C); 
     if (composit[A] == 'y') composite_pulse(pw,t3,rof1,rof2,v1);
       else rgpulse(pw,t3,rof1,rof2);
     setreceiver(t4);
- if (fsqd[A] =='y') obsoffset(tof+oslsfrq);
+    if (fsqd[A] =='y') obsoffset(tof+oslsfrq);
 }
 /* **************************************************************** */
 

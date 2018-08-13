@@ -188,7 +188,7 @@ pulsesequence()
                         /* 180 degree selective sinc pulse on CO(174ppm) */
             rf7,
   	                /* fine power for the pwC10 ("offC10") pulse */
-            rf0,                        /* full fine power */
+            /*rf0,*/                      /* full fine power */
             compC = getval("compC"), 
                         /* adjustment for C13 amplifier compression */
                     /* temporary Pbox parameters */
@@ -219,9 +219,7 @@ pulsesequence()
              gzlvl2, 
              gzlvl3, 
              gzlvl4, 
-             gzlvl5,
-             gzlvl6,
-             gzlvl7; 
+             gzlvl5; 
 
 
 /* LOAD VARIABLES */
@@ -257,8 +255,6 @@ pulsesequence()
   gzlvl3 = getval("gzlvl3");
   gzlvl4 = getval("gzlvl4");
   gzlvl5 = getval("gzlvl5");
-  gzlvl6 = getval("gzlvl6");
-  gzlvl7 = getval("gzlvl7");
 
 /* LOAD PHASE TABLE */
   settable(t1,8,phi1);
@@ -361,7 +357,7 @@ pulsesequence()
     }
 
     /* maximum fine power for pwC pulses */
-	rf0 = 4095.0;
+   //rf0 = 4095.0;
 
       setautocal();                        /* activate auto-calibration flags */ 
         

@@ -72,7 +72,7 @@ pulsesequence()
              ppm,nst,pws,bw,ofs,   /* used by Pbox */
              pwN,pwNlvl,compH,compC,pwC,pwClvl,
 
-             gstab,
+             //gstab,
 
              d_ad,                 /* C high power for adiabatic pulses */
              pwc_ad,               /* C 90 pulse width   */
@@ -161,7 +161,7 @@ pulsesequence()
 
   getstr("C_flg",C_flg);
   getstr("sh_ad",sh_ad);
-  gstab  = getval("gstab");
+  //gstab  = getval("gstab");
 
   pwN=getval("pwN"); pwNlvl=getval("pwN");
   pwC=getval("pwC"); pwClvl=getval("pwClvl");
@@ -266,29 +266,29 @@ pulsesequence()
 
    if(ix==1)
      d4_init = d4;
-     t3_counter = (int) ( (d4-d4_init)*sw3 + 0.5);
-     if(t3_counter %2) {
+   t3_counter = (int) ( (d4-d4_init)*sw3 + 0.5);
+   if(t3_counter %2) {
        tsadd(t4,2,4);
        tsadd(t10,2,4);
-     }
+   }
 
    if(ix==1)
      d3_init = d3;
-     t2_counter = (int) ( (d3-d3_init)*sw2 + 0.5);
-     if(t2_counter %2) {
+   t2_counter = (int) ( (d3-d3_init)*sw2 + 0.5);
+   if(t2_counter %2) {
        tsadd(t2,2,4);
        tsadd(t10,2,4); 
-     }
+   }
 
    if(ix==1)
      d2_init = d2;
-     t1_counter = (int) ( (d2-d2_init)*sw1 + 0.5);
-     if(t1_counter %2) {
+   t1_counter = (int) ( (d2-d2_init)*sw1 + 0.5);
+   if(t1_counter %2) {
    /*
        tsadd(t1,2,4);
        tsadd(t10,2,4); 
   */
-     }
+   }
 
 /* set up so that get (-90,180) phase corrects in F1 if f1180 flag is y */
 

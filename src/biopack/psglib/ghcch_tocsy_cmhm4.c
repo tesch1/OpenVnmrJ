@@ -71,8 +71,8 @@ int         icosel1,
             icosel2,  				/* used to get n and p type */
 	    icosel3,
             t1_counter,  		        /* used for states tppi in t1 */
-            t2_counter,  	 	        /* used for states tppi in t2 */
-	    t3_counter,				/* used for states tppi in t3, not yet set */ 	
+            /*t2_counter,*/  	 	        /* used for states tppi in t2 */
+	    /*t3_counter,*/			/* used for states tppi in t3, not yet set */ 	
 	    ni2 = getval("ni2"),
 	    ni3 = getval("ni3");
 
@@ -135,8 +135,8 @@ double      tau1,         				         /*  t1 delay */
 	gzlvl7 = getval("gzlvl7"),
 	gzlvl8 = getval("gzlvl8"),
 
-        TC = getval("TC"),
-        pwco,copwr, cores,codmf;
+        TC = getval("TC")
+        /*pwco,copwr, cores,codmf*/;
 
     getstr("mag_flg",mag_flg);
     getstr("f1180",f1180);
@@ -183,10 +183,10 @@ double      tau1,         				         /*  t1 delay */
 setautocal();
   if (autocal[0] == 'n')
   {
-    codmf= getval("codmf");
-    pwco = 1.0/codmf; /* pw for 13C' decoupling field */
-    copwr = getval("copwr"); /* power level for 13C' decoupling */
-    cores = getval("cores"); /* power level for 13C' decoupling */
+    //codmf= getval("codmf");
+    //pwco = 1.0/codmf; /* pw for 13C' decoupling field */
+    //copwr = getval("copwr"); /* power level for 13C' decoupling */
+    //cores = getval("cores"); /* power level for 13C' decoupling */
   }
   else        /* if autocal = 'y'(yes), 'q'(quiet), r(read), or 's'(semi) */
   {
@@ -200,8 +200,9 @@ setautocal();
       me180 = pbox_makeA("me180", "sech", bw, pws, ofs, compC*pwC, pwClvl, nst);
     }
 
-    copwr = Pdec_154p.pwr; pwco = 1.0/Pdec_154p.dmf;
-    cores = Pdec_154p.dres;
+    //copwr = Pdec_154p.pwr;
+    //pwco = 1.0/Pdec_154p.dmf;
+    //cores = Pdec_154p.dres;
     pwme180 = me180.pw; me180pwr= me180.pwr; me180pwrf = me180.pwrf;
 
   }
@@ -299,10 +300,10 @@ setautocal();
 	{ tsadd(t3,2,4); tsadd(t11,2,4); }
 
    if( ix == 1) d3_init = d3;
-   t2_counter = (int) ( (d3-d3_init)*sw2 + 0.5 );
+   //t2_counter = (int) ( (d3-d3_init)*sw2 + 0.5 );
 
     if( ix == 1) d4_init = d4;
-    t3_counter = (int) ( (d4-d4_init)*sw3 + 0.5 );
+    //t3_counter = (int) ( (d4-d4_init)*sw3 + 0.5 );
 
     if(ni2 > 1)
            kappa2 = (double)(sw2*(del5)) / ( (double) (ni2) );

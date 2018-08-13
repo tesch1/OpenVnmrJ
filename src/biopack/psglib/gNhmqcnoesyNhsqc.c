@@ -66,7 +66,7 @@ pulsesequence()
  char        f1180[MAXSTR],f2180[MAXSTR],f3180[MAXSTR],
              mag_flg[MAXSTR], flipback[MAXSTR];
 
- int	     ni2, ni3, phase, phase2, phase3, icosel,t1_counter, t2_counter, t3_counter;
+ int	     /*ni2, ni3, */phase, phase2, phase3, icosel,t1_counter, t2_counter, t3_counter;
 
  double      
              tofhn,              /* adjust carrier to the center of amide protons   */
@@ -112,8 +112,8 @@ pulsesequence()
   sw2 = getval("sw2");
   sw3 = getval("sw3");
   ni = getval("ni");
-  ni2 = getval("ni2");
-  ni3 = getval("ni3");
+  //ni2 = getval("ni2");
+  //ni3 = getval("ni3");
   phase = (int)(getval("phase") + 0.5);
   phase2 = (int)(getval("phase2") + 0.5);
   phase3 = (int)(getval("phase3") + 0.5);

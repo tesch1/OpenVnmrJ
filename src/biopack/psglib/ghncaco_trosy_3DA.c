@@ -443,7 +443,7 @@ pulsesequence()
               - pwca180dec - WFG_STOP_DELAY - 2.0*pwN - POWER_DELAY
               - 4.0e-6);
 
-        if(tau1 < 0.2e-6) tau1 = 0.2e-6;
+    if(tau1 < 0.2e-6) tau1 = 0.2e-6;
     tau1 = tau1/2.0;
 
 /*  Set up f2180  tau2 = t2               */
@@ -453,7 +453,7 @@ pulsesequence()
         tau2 += ( 1.0 / (2.0*sw2) );
         if(tau2 < 0.2e-6) tau2 = 0.2e-6;
     }
-        tau2 = tau2/2.0;
+    tau2 = tau2/2.0;
 
 /* Calculate modifications to phases for States-TPPI acquisition          */
 

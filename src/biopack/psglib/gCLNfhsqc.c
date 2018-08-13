@@ -70,12 +70,12 @@ static int phi1[4] = {1,1,3,3},
 
 pulsesequence()
 {
-  int       phase, t1_counter;
+  int       /*phase,*/ t1_counter;
 
   char	    C13refoc[MAXSTR],		/* C13 sech/tanh pulse in middle of t1 */
             TROSY[MAXSTR],
             wtg3919[MAXSTR];
-  double    tauxh, tau1,  gt2, gt1, 
+  double    tauxh, tau1,  /*gt2,*/ gt1, 
             gztm, mix,  pw180, pw135, pw120, pw110, p1lvl, 
             gzlvl1,  cycles,  
             pwNt = 0.0,               /* pulse only active in the TROSY option */
@@ -94,10 +94,10 @@ pulsesequence()
             compC = getval("compC");   /* adjustment for C13 amplifier compr-n */
 
    gztm=getval("gztm");
-   gt2=getval("gt2");
+   //gt2=getval("gt2");
    gt1= getval("gt1");
    mix=getval("mix");
-   phase = (int) (getval("phase") + 0.5);
+   //phase = (int) (getval("phase") + 0.5);
    sw1 = getval("sw1");
    pw180 = getval("pw180");
    gzlvl1 = getval("gzlvl1");

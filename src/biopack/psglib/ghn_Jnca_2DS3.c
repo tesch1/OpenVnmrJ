@@ -70,7 +70,7 @@ pulsesequence()
 
  double      /* DELAYS */
              tau1,                      /* t1/2 */
-             tauhn,taunco,taucoca,taunca,tauhaca,taucaha,taucacb,
+             tauhn,taunco,taucoca, //taunca,tauhaca,taucaha,taucacb,
 
 	     /* COUPLINGS */ 
              jhn = getval("jhn"),
@@ -167,16 +167,16 @@ pulsesequence()
    tauhn = ((jhn != 0.0) ? 1/(4*(jhn)) : 2.25e-3);
    taunco = ((jnco !=0.0) ? 1/(4*(jnco)) : 16.6e-3);
    taucoca = ((jcoca !=0.0) ? 1/(4*(jcoca)) : 4.5e-3);
-   taunca =  ((jnca  !=0.0)  ? 1/(4*(jnca))  : 12e-3);
-   tauhaca = ((jhaca !=0.0)  ? 1/(4*(jhaca)) : 12e-3);
-   taucaha = ((jcaha !=0.0)  ? 1/(4*(jcaha)) : 12e-3);
-   taucacb = ((jcacb !=0.0)  ? 1/(4*(jcacb)) : 12e-3);
+   //taunca =  ((jnca  !=0.0)  ? 1/(4*(jnca))  : 12e-3);
+   //tauhaca = ((jhaca !=0.0)  ? 1/(4*(jhaca)) : 12e-3);
+   //taucaha = ((jcaha !=0.0)  ? 1/(4*(jcaha)) : 12e-3);
+   //taucacb = ((jcacb !=0.0)  ? 1/(4*(jcacb)) : 12e-3);
 
 
-       if((getval("arraydim") < 1.5) || (ix==1))
-         first_FID = 1;
-       else
-         first_FID = 0;
+   if((getval("arraydim") < 1.5) || (ix==1))
+      first_FID = 1;
+   else
+      first_FID = 0;
 
     /* 90 degree pulse on CO, null at Ca 118ppm away */
 
@@ -207,34 +207,34 @@ pulsesequence()
       
 /* Phase incrementation for hypercomplex data */
     
-     kappa=(taunco - tauhn - gt1 - gstab)/(0.5*ni/sw1)-0.001;
+      kappa = (taunco - tauhn - gt1 - gstab)/(0.5*ni/sw1)-0.001;
       if (kappa > 1.0) 
-     {  
-	              kappa=1.0-0.01;
-     }   
+      {  
+         kappa = 1.0 - 0.01;
+      }   
 
-       if ( phase1 == 1) /* Hypercomplex in t2 */
-     {
-	                icosel = -1;
-	                tsadd(t2, 2, 4);
-	                tsadd(t3, 2, 4);
-     }  
+      if ( phase1 == 1) /* Hypercomplex in t2 */
+      {
+         icosel = -1;
+         tsadd(t2, 2, 4);
+         tsadd(t3, 2, 4);
+      }  
       else icosel = 1;   
       
       if (ix == 1)
-      printf("semi constant-time factor %4.6f\n",kappa); 
+         printf("semi constant-time factor %4.6f\n",kappa); 
    
 /* calculate modification to phases based on current t1 values
    to achieve States-TPPI acquisition */
  
-   if (ix == 1)
-      d2_init = d2;
+      if (ix == 1)
+         d2_init = d2;
       t1_counter = (int) ( (d2-d2_init)*sw1 + 0.5);
 
       if (t1_counter %2)  /* STATES-TPPI */
       {
-        tsadd(t1,2,4);
-        tsadd(t7,2,4);
+         tsadd(t1,2,4);
+         tsadd(t7,2,4);
       }
 
 /* set up so that get (-90,180) phase corrects in F1 if f1180 flag is y */

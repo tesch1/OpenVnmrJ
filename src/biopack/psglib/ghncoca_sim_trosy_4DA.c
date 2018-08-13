@@ -398,10 +398,10 @@ pulsesequence()
         tau1 += (1.0/(2.0*sw1) - 4.0*pwc90/PI - 2.0*pwN 
               - WFG3_START_DELAY - WFG3_STOP_DELAY - 4.0e-6 - 2.0*POWER_DELAY - 4.0e-6);
 
-        if(tau1 < 0.2e-6) {
+      if(tau1 < 0.2e-6) {
          tau1 = 0.4e-6;
 	 text_error("tau1 could be negative");
-	}
+      }
     }
     else
     {
@@ -413,10 +413,10 @@ pulsesequence()
         tau1 = tau1 - 4.0*pwc90/PI - 2.0*pwN 
               - WFG3_START_DELAY - WFG3_STOP_DELAY - 4.0e-6 - 2.0*POWER_DELAY - 4.0e-6;
  
-        if(tau1 < 0.2e-6) tau1 = 0.4e-6;
-     }
+      if(tau1 < 0.2e-6) tau1 = 0.4e-6;
+    }
 
-        tau1 = tau1/2.0;
+    tau1 = tau1/2.0;
 
 /*  Set up f2180  tau2 = t2               */
 

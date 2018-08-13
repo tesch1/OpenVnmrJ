@@ -410,12 +410,14 @@ status(A);
            /* selective H2O one-lobe sinc pulse */
         wetpwr = tpwr - 20.0*log10(wetpw/(pw*compH*1.69));  /* sinc needs 1.69 times more */
         wetpwr = (int) (wetpwr +0.5);                       /* power than a square pulse */
-        Wet4(wetpwr,"rna_H2Osinc",wetpw,zero,one); delay(dz); 
+        Wet4(wetpwr,"rna_H2Osinc",wetpw,zero,one);
+        delay(dz); 
        } 
       else
-       Wet4(wetpwr,wetshape,wetpw,zero,one); delay(dz); 
-       delay(1.0e-4);
-       obspower(tpwr);
+        Wet4(wetpwr,wetshape,wetpw,zero,one);
+      delay(dz); 
+      delay(1.0e-4);
+      obspower(tpwr);
     }
         rcvroff();
 

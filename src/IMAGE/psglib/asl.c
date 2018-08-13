@@ -125,7 +125,7 @@ pulsesequence() {
 
     /* Make sure the slice refocus, readout refocus, 
        and phase dephaser fit in the same duration */
-    tref = calc_sim_gradient(&ror_grad, &per_grad, &null_grad, getval("tpe"), WRITE);
+    /*tref = */calc_sim_gradient(&ror_grad, &per_grad, &null_grad, getval("tpe"), WRITE);
     if (sgldisplay) displayEPI(&epi_grad);
 
     /* calc_sim_gradient recalculates per_grad, so reset its 

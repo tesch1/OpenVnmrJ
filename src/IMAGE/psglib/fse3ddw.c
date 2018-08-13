@@ -189,7 +189,7 @@ void pulsesequence() {
   }
 
 
-  te1_delay = te1/2.0 - tau1;
+  //te1_delay = te1/2.0 - tau1;
   te2_delay = esp/2.0 - tau2;
   te3_delay = esp/2.0 - tau3;
 
