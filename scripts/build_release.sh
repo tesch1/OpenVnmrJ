@@ -145,8 +145,10 @@ do_checkout () {
     # check if the OpenVnmrJ directory already exists in ${OVJ_BUILDDIR}
     if [ -d "${OVJ_BUILDDIR}/OpenVnmrJ" ]; then
         log_info "checkout: OpenVnmrJ source directory: ${OVJ_BUILDDIR}/OpenVnmrJ already exists."
-        log_info "checkout: checking out requested branch '${OVJ_GITBRANCH}'"
         log_cmd cd "${OVJ_BUILDDIR}/OpenVnmrJ" || return $?
+        log_info "checkout: fetching updates."
+        log_cmd git fetch || return $?
+        log_info "checkout: checking out requested branch '${OVJ_GITBRANCH}'"
         log_cmd git checkout "${OVJ_GITBRANCH}" || return $?
         log_cmd cd "${OVJ_BUILDDIR}"
         # do something, like delete it?
@@ -195,7 +197,7 @@ do_build () {
         log_cmd cd "${OVJ_BUILDDIR}/" || return $?
         log_cmd rm -rf dvdimage* options vnmr console
 
-        log_warn "build: wiping OpenVnmrJ/src directory to fresh state"
+        log_warn "build: wiping OpenVnmrJ/src/ directory to fresh state"
         log_cmd cd "${OVJ_BUILDDIR}/OpenVnmrJ/" || return $?
         log_cmd rm -rf src
         log_cmd git checkout ./src || return $?
@@ -237,11 +239,12 @@ do_package () {
     local dvdBuildName1=${OUTPUT_PREFIX}_${OVJ_VERSION_STR}  # used in ovjmacout.sh,ovjddrout.sh
     local dvdBuildName2=${OUTPUT_PREFIX}_${OVJ_VERSION_STR}  # used in ovjmiout.sh
     local ovjAppName=OpenVnmrJ_${OVJ_VERSION_STR}.app
+    local doCodeSign=no
     #local shortDate
     #shortDate=$(date +%F)
 
     if [ ! -x "${PACK_SCRIPT_SRC}" ]; then
-        log_error "package: invalid packaging script requeted: '${PACK_SCRIPT_SRC}'"
+        log_error "package: invalid packaging script requested: '${PACK_SCRIPT_SRC}'"
         exit 1
     fi
 
@@ -252,7 +255,7 @@ do_package () {
     #log_cmd make ${PACK_SCRIPT} # what does this do?
 
     # export vars used by the ovj???out.sh ($PACK_SCRIPT) scripts
-    export workspacedir dvdBuildName1 dvdBuildName2 ovjAppName OVJ_TOOLS
+    export workspacedir dvdBuildName1 dvdBuildName2 ovjAppName OVJ_TOOLS doCodeSign
     cmdspin "./${PACK_SCRIPT}" || return $?
 
     # make a second copy? make an iso? todo...

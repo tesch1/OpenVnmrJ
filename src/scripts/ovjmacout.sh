@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #
 # Copyright (C) 2015  University of Oregon
@@ -9,28 +9,33 @@
 # For more information, see the LICENSE file.
 # 
 
+CMDLINE="$0 $*"
+SCRIPT=$(basename "$0")
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ERRCOUNT=0
+onerror() {
+    echo "$(tput setaf 1)$SCRIPT: Error on line ${BASH_LINENO[0]}, exiting.$(tput sgr0)"
+    if [ -t 3 ]; then
+        echo "$(tput setaf 1)$SCRIPT: Error on line ${BASH_LINENO[0]}, exiting.$(tput sgr0)" >&3
+        exec 1>&3 2>&4
+    fi
+    exit 1
+}
+trap onerror ERR
+
+#
 # Default Declarations
 #
-
-if [ "x${workspacedir}" = "x" ]
-then
-   workspacedir=$HOME
-fi
-if [ "x${dvdBuildName1}" = "x" ]
-then
-   dvdBuildName1=dvdimageOVJ
-fi
+: "${workspacedir=$HOME}"
+: "${dvdBuildName1=dvdimageOVJ}"
+: "${ovjAppName=OpenVnmrJ.app}"
+: "${doCodeSign=yes}"
 
 gitdir="${workspacedir}/OpenVnmrJ"
 vnmrdir="${gitdir}/../vnmr"
 standardsdir="${gitdir}/../options/standard"
 optddrdir="${gitdir}/../options/console/ddr"
 ddrconsoledir="${gitdir}/../console/ddr"
-
-if [ x$ovjAppName = "x" ]
-then
-   ovjAppName=OpenVnmrJ.app
-fi
 
 # TODO replace this with spiffy OS X app that does away with installer...
 packagedir="${workspacedir}/${dvdBuildName1}/Package_contents"
@@ -46,10 +51,10 @@ mkdir -p "${packagedir}/$ovjAppName/Contents/MacOS"
 cp VJ "${packagedir}/$ovjAppName/Contents/MacOS/."
 rm -f "${vnmrdir}/bin/convert"
 #cp convert $vnmrdir/bin/.
-tar jxf ImageMagick.tar.bz2 -C $vnmrdir
+tar jxf ImageMagick.tar.bz2 -C "$vnmrdir"
 # rm -rf "${vnmrdir}/jre"
 # cp $JAVA_HOME/jre $vnmrdir/
-rm -rf $vnmrdir/pgsql
+rm -rf "$vnmrdir/pgsql"
 cp -a "${OVJ_TOOLS}/pgsql.osx" "${vnmrdir}"/pgsql
 
 vjdir="${packagedir}/${ovjAppName}/Contents/Resources/OpenVnmrJ"
@@ -59,86 +64,77 @@ mkdir "${vjdir}/tmp" "$vjdir/acqqueue"
 chmod 777 "${vjdir}/tmp" "$vjdir/acqqueue"
 
 # backup for later copying useful dirs in existing /vnmr
-preinstall=$resdir/preinstall
-printf "#!/bin/sh\n" > $preinstall
-printf "orig=\`readlink /vnmr\`\n" >> $preinstall
-printf "if [ -d \$orig/fidlib ]\n" >> $preinstall
-printf "then\n" >> $preinstall
-printf "  (cd \$orig; zip -ryq fidlib.zip fidlib; mv fidlib.zip /tmp )\n" >> $preinstall
-printf "fi\n" >> $preinstall
-printf "if [ -d \$orig/help ]\n" >> $preinstall
-printf "then\n" >> $preinstall
-printf "  (cd \$orig; zip -ryq help.zip help; mv help.zip /tmp )\n" >> $preinstall
-printf "fi\n" >> $preinstall
-printf "if [ -d \$orig/nmrPipe ]\n" >> $preinstall
-printf "then\n" >> $preinstall
-printf "  (cd \$orig; zip -ryq nmrpipe.zip nmrPipe; mv nmrpipe.zip /tmp )\n" >> $preinstall
-printf "fi\n" >> $preinstall
-printf "rm -rf /Applications/$ovjAppName\n" >> $preinstall
-chmod +x $preinstall
+preinstall="$resdir/preinstall"
+cat << 'EOF' > "$preinstall"
+#!/bin/sh
+orig=$(readlink /vnmr)
+for base in fidlib help nmrPipe; do
+  zipf=$base.zip
+  if [ -d "$orig/$base" ]
+  then
+    (cd "$orig" && zip -ryq $zipf $base && mv $zipf /tmp )
+  fi
+rm -rf "/Applications/$ovjAppName"
+EOF
+chmod +x "$preinstall"
 
 # setup the OpenVnmrJ environment and re-install any directories backup up above
-postinstall=$resdir/postinstall
-printf "#!/bin/sh\n" > $postinstall
-printf "rm -rf /vnmr\n" >> $postinstall
-printf "ln -s /Applications/$ovjAppName/Contents/Resources/OpenVnmrJ /vnmr\n" >> $postinstall
-printf "username=\$(/usr/bin/stat -f%%Su /dev/console)\n" >> $postinstall
-printf "echo $%s > /vnmr/adm/users/userlist\n" username >> $postinstall
-printf "echo \"vnmr:VNMR group:$%s\" > /vnmr/adm/users/group\n" username >> $postinstall
-printf "cd /vnmr/adm/users/profiles/system; sed s/USER/$%s/g < sys_tmplt  > $%s; rm -f sys_tmplt\n" username username >> $postinstall
-printf "cd /vnmr/adm/users/profiles/user;   sed s/USER/$%s/g < user_tmplt > $%s; rm -f user_tmplt\n" username username >> $postinstall
-printf "chown -h $%s /vnmr\n" username >> $postinstall
-printf "chown -R -L $%s /vnmr\n" username >> $postinstall
-printf "/vnmr/bin/makeuser $%s y\n" username >> $postinstall
-printf "/vnmr/bin/dbsetup root /vnmr \n" >> $postinstall
+postinstall="$resdir/postinstall"
+cat << 'EOF' > "$postinstall"
+#!/bin/sh
+rm -f /vnmr
+ln -s "/Applications/$ovjAppName/Contents/Resources/OpenVnmrJ" /vnmr
+username=$(/usr/bin/stat -f%%Su /dev/console)
+echo "$username" > /vnmr/adm/users/userlist
+echo "vnmr:VNMR group:$username" > /vnmr/adm/users/group
+cd /vnmr/adm/users/profiles/system && sed s/USER/$username/g < sys_tmplt  > $username; rm -f sys_tmplt
+cd /vnmr/adm/users/profiles/user   && sed s/USER/$username/g < user_tmplt > $username; rm -f user_tmplt
+chown -h "$username" /vnmr
+chown -R -L "$username" /vnmr
+/vnmr/bin/makeuser "$username" y
+/vnmr/bin/dbsetup root /vnmr
 
-printf "if [ -f /tmp/fidlib.zip ]\n" >> $postinstall
-printf "then\n" >> $postinstall
-printf "  mv /tmp/fidlib.zip /vnmr\n" >> $postinstall
-printf "  (cd /vnmr; unzip -q fidlib.zip; rm -f fidlib.zip)\n" >> $postinstall
-printf "fi\n" >> $postinstall
-printf "if [ -f /tmp/help.zip ]\n" >> $postinstall
-printf "then\n" >> $postinstall
-printf "  mv /tmp/help.zip /vnmr\n" >> $postinstall
-printf "  (cd /vnmr; unzip -q help.zip; rm -f help.zip)\n" >> $postinstall
-printf "fi\n" >> $postinstall
-printf "if [ -f /tmp/nmrpipe.zip ]\n" >> $postinstall
-printf "then\n" >> $postinstall
-printf "  mv /tmp/nmrpipe.zip /vnmr\n" >> $postinstall
-printf "  (cd /vnmr; unzip -q nmrpipe.zip; rm -f nmrpipe.zip)\n" >> $postinstall
-printf "fi\n" >> $postinstall
+for base in fidlib help nmrPipe; do
+  zipf=$base.zip
+  if [ -f /tmp/$zipf ]
+  then
+    mv /tmp/$zipf /vnmr
+    (cd /vnmr && unzip -q $zipf && rm -f $zipf)
+  fi
+done
+EOF
 
-chmod +x $postinstall
+chmod +x "$postinstall"
 
-cd "$vnmrdir"; tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir"; tar xpf -)
-cd "$ddrconsoledir"; tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir"; tar xpf -)
+cd "$vnmrdir"; tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir" && tar xpf -)
+cd "$ddrconsoledir"; tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir" && tar xpf -)
 
 optionslist=`ls $standardsdir`
 for file in $optionslist
 do
-   if [ $file != "P11" ]
+   if [ "$file" != "P11" ]
    then
       cd "${standardsdir}/${file}"
-      tar cf - --exclude .gitignore --exclude "._*" . | (cd "${vjdir}"; tar xpf -)
+      tar cf - --exclude .gitignore --exclude "._*" . | (cd "${vjdir}" && tar xpf -)
    fi
 done
 optionslist=`ls $optddrdir`
 for file in $optionslist
 do
-   if [ $file != "P11" ]
+   if [ "$file" != "P11" ]
    then
-      cd $optddrdir/$file
-      tar cf - --exclude .gitignore --exclude "._*" . | (cd $vjdir; tar xpf -)
+      cd "$optddrdir/$file"
+      tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir" && tar xpf -)
    fi
 done
 
-cd $gitdir/src/macos
-rm -f $vjdir/bin/vnmrj
-cp vnmrj.sh $vjdir/bin/vnmrj
-chmod 755 $vjdir/bin/vnmrj
+cd "$gitdir/src/macos"
+rm -f "$vjdir/bin/vnmrj"
+cp vnmrj.sh "$vjdir/bin/vnmrj"
+chmod 755 "$vjdir/bin/vnmrj"
 
-echo "vnmrs" >> $vjdir/vnmrrev 
-cd $vjdir/adm/users
+echo "vnmrs" >> "$vjdir/vnmrrev"
+cd "$vjdir/adm/users"
 cat userDefaults | sed '/^home/c\
 home    yes     no      /Users/$accname\
 ' > userDefaults.bak
@@ -148,6 +144,11 @@ mkdir profiles/system profiles/user
 cp "${gitdir}/src/macos/sys_tmplt" profiles/system/.
 cp "${gitdir}/src/macos/user_tmplt" profiles/user/.
 
-#Following need a certificate issued by Apple to developer
-echo "Code signing requires a certificate issued by Apple. Check for any errors and fix for OS X El Capitan or macOS Sierra"
-codesign -s "3rd Party Mac Developer Application:" --entitlements "${gitdir}/src/macos/entitlement.plist" "${packagedir}/${ovjAppName}"
+if [ "$doCodeSign" = yes ]; then
+    #Following need a certificate issued by Apple to developer
+    echo "Code signing requires a certificate issued by Apple. "
+    echo "Check for any errors and fix for OS X El Capitan or macOS Sierra"
+    codesign -s "3rd Party Mac Developer Application:" \
+             --entitlements "${gitdir}/src/macos/entitlement.plist" \
+             "${packagedir}/${ovjAppName}"
+fi
