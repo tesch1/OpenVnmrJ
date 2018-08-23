@@ -23,7 +23,7 @@
 : ${VERBOSE=3}
 : ${ERRCOUNT=0}
 
-LEVELNAMES=( ERROR MSG WARN INFO DEBUG )
+LEVELNAMES=( ERROR "MSG  " "WARN " "INFO " DEBUG )
 
 # call this before calling any log commands.  can be called repeatedly
 # from one script to change the log file.
@@ -100,6 +100,7 @@ cmdspin () {
     #
     # Run a command, spin a wheelie while it's running
     #
+    local start=$SECONDS
     log_info "Cmd started $(date)"
     log_info "\$ $*"
     # spinner
@@ -120,7 +121,8 @@ cmdspin () {
     kill -PIPE $SPINNER_PID
     trap " " EXIT
     if [ -t 3 ]; then printf '\b.\n' >&3 ; fi
-    log_info "Cmd finished $(date), returned: $retval"
+    local dur=$(( $SECONDS - $start ))
+    log_info "Cmd returned: $retval, duration: $(TZ=UTC0 printf '%(%H:%M:%S)T\n' "$dur")"
     return $retval
 }
 

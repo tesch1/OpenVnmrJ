@@ -250,13 +250,13 @@ do_package () {
 
     # get the git tag for this version
     log_cmd cd "${OVJ_ROOT}/"
-    OVJ_VERSION_STR="$(git describe --exact-match --tags 2>/dev/null || git log -n1 --pretty='%h')"
+    : ${OVJ_VERSION_STR="_$(git describe --exact-match --tags 2>/dev/null || git log -n1 --pretty='%h')"}
 
     log_info "package: packing using ${PACK_SCRIPT} -> ${OUTPUT_PREFIX}_${OVJ_VERSION_STR}"
 
-    local dvdBuildName1=${OUTPUT_PREFIX}_${OVJ_VERSION_STR}  # used in ovjmacout.sh,ovjddrout.sh
-    local dvdBuildName2=${OUTPUT_PREFIX}_${OVJ_VERSION_STR}  # used in ovjmiout.sh
-    local ovjAppName=OpenVnmrJ_${OVJ_VERSION_STR}.app
+    local dvdBuildName1=${OUTPUT_PREFIX}${OVJ_VERSION_STR}  # used in ovjmacout.sh,ovjddrout.sh
+    local dvdBuildName2=${OUTPUT_PREFIX}${OVJ_VERSION_STR}  # used in ovjmiout.sh
+    local ovjAppName=OpenVnmrJ${OVJ_VERSION_STR}.app
     #local shortDate
     #shortDate=$(date +%F)
 
