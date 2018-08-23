@@ -25,6 +25,7 @@ trap onerror ERR
 
 : "${ACTIONS="install test"}"
 : "${FORCE=no}"
+: "${OVJ_PREFIX=/home}"
 : "${OVJ_VERSION=openvnmrj_1.1_A}"
 : "${VERBOSE=3}"
 : "${OVJ_SUPERCLEAN=no}"
@@ -35,7 +36,6 @@ trap onerror ERR
 : "${OVJ_OS=rht}"
 : "${OVJ_NMRADMIN=vnmr1}"
 : "${OVJ_NMRGROUP=nmr}"
-: "${OVJ_HOME=/home}"
 : "${OVJ_SETVNMRLINK=yes}"
 tmp=(VNMR Backprojection Biosolidspack DOSY_for_VnmrJ Imaging_or_Triax STARS)
 OVJ_INS_LIST=("${OVJ_INS_LIST[@]:-${tmp[@]}}")
@@ -91,9 +91,10 @@ options:
                           VNMRS         : propulse,mr400,mr400dd2,vnmrs,vnmrsdd2
   -p <password>         - set password for vnmr1 and testuser (${OVJ_PASSWD})
   -d                    - install as datastation (TODO!)
+  --prefix <path>       - installation prefix (${OVJ_PREFIX})
   --nolink              - dont set the /vnmr link (${OVJ_SETVNMRLINK})
   -f|--force            - force [un]install (TODO: prompt if unset)
-  -s                    - super-clean uninstall, remove vnmr1&testuser home dirs too
+  -s                    - super-clean uninstall, remove vnmr1 & testuser home dirs too
   -v|--verbose          - be more verbose (can add multiple times)
   -q|--quiet            - be more quiet   (can add multiple times)
   -h|--help             - print this message and exit
@@ -131,8 +132,11 @@ while [ $# -gt 0 ]; do
         -A)                     OVJ_INS_LIST=()             ;;
         -o)                     OVJ_INS_OPTS+=("$2"); shift ;;
         -O)                     OVJ_INS_OPTS=()             ;;
-        -c)                     OVJ_CONSOLE="$2"; shift      ;;
+        -c)                     OVJ_CONSOLE="$2"; shift     ;;
         -p)                     OVJ_PASSWD="$2"; shift      ;;
+        --prefix)               OVJ_PREFIX="$2"; shift
+                                [ ! -z "$OVJ_PREFIX" ]      ;;
+        --nolink)               OVJ_SETVNMRLINK=no          ;;
         -f|--force)             FORCE=yes                   ;;
         -s)                     OVJ_SUPERCLEAN=yes          ;;
         -d)                     OVJ_SYSTEM=Datastation      ;;
@@ -202,7 +206,7 @@ is_ovj_installed() {
     # does ovj appear to be installed already?
     # todo: could check more thoroughly!
     [ -d /vnmr ] && [ -d /usr/varian ] && \
-        [ -d "${OVJ_HOME}/${OVJ_VERSION}" ] && \
+        [ -d "${OVJ_PREFIX}/${OVJ_VERSION}" ] && \
         [ -d ~vnmr1 ] && \
         [ -d ~testuser ] && \
         getent passwd testuser && \
@@ -281,8 +285,8 @@ for ACTION in $ACTIONS ; do
                 ;;
         esac
         cmdspin ${ovjBuildDir}/dvdimage${SUFX}_*/code/ins_vnmr "${OVJ_OS}" "${OVJ_CONSOLE}" \
-                ${ovjBuildDir}/dvdimage${SUFX}_*/code "${OVJ_HOME}/${OVJ_VERSION}" \
-                "${OVJ_NMRADMIN}" "${OVJ_NMRGROUP}" "${OVJ_HOME}" "${OVJ_SETVNMRLINK}" no \
+                ${ovjBuildDir}/dvdimage${SUFX}_*/code "${OVJ_PREFIX:?}/${OVJ_VERSION:?}" \
+                "${OVJ_NMRADMIN}" "${OVJ_NMRGROUP}" "${OVJ_PREFIX}" "${OVJ_SETVNMRLINK}" no \
                 "+$(join_by + "${OVJ_INS_LIST[@]}")" "+$(join_by + "${OVJ_INS_OPTS[@]}")"
         retval=$?
 
@@ -327,7 +331,7 @@ for ACTION in $ACTIONS ; do
         # delete system varian stuff
         rm -f /vnmr
         rm -rf /usr/varian
-        rm -rf "/home/${OVJ_VERSION:?}"
+        rm -rf "${OVJ_PREFIX:?}/${OVJ_VERSION:?}"
 
         # remove users and groups
         killall -u vnmr1     && log_warn "Killed procs belonging to 'vnmr1'" || true
