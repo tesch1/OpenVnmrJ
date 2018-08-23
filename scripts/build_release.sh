@@ -40,6 +40,8 @@ numcpus() {
 : ${OVJ_DO_BUILD=no}
 : ${OVJ_DO_PACKAGE=no}
 : ${OVJ_BUILDDIR=${ovjBuildDir}}
+: ${OVJ_ROOT=$(dirname "$SCRIPTDIR")}
+: ${OVJ_BUILDOPTS=}
 : ${OVJ_DEVELOPER=OpenVnmrJ}
 : ${OVJ_GITBRANCH=master}
 : ${OVJ_GITURL="https://github.com/OpenVnmrJ/OpenVnmrJ.git"}
@@ -73,6 +75,7 @@ where [options...] are:
                               [${OVJT_GITURL}]
   --gitdepth num            - argument for --depth in git clone [${OVJ_GITDEPTH}]
   -r|--srcreset             - reset the OpenVnmr/src directory before compiling
+  -o|--buildopt             - set a build option setting in buildoptions.py
   -s scons_options          - flags to pass to scons [${OVJ_SCONSFLAGS}]
   --ddr yes|no              - enable Direct-Drive (VnmrS/DD2/ProPulse) DVD build
                               [${OVJ_PACK_DDR}]
@@ -103,6 +106,7 @@ while [ $# -gt 0 ]; do
         -g|--giturl)            OVJ_GITURL="$2"; shift        ;;
         -d|--bindir)            OVJ_BUILDDIR="$2"; shift      ;;
         --gitdepth)             OVJ_GITDEPTH="$2"; shift      ;;
+        -o|--buildopt)          OVJ_BUILDOPTS="$OVJ_BUILDOPTS $2"; shift ;;
         -r|--srcreset)          OVJ_SRCRESET=yes              ;;
         -s)                     OVJ_SCONSFLAGS="$2"; shift    ;;
         --ddr)                  OVJ_PACK_DDR="$2"; shift      ;;
@@ -157,18 +161,18 @@ do_checkout () {
     fi
 
     # check that the thing actually checked out an OpenVnmrJ directory
-    if [ ! -d "${OVJ_BUILDDIR}/OpenVnmrJ/src/vnmr" ]; then
+    if [ ! -d "${OVJ_ROOT}/src/vnmr" ]; then
         log_error "checkout: git clone of '${OVJ_GITURL}' didnt create valid OpenVnmrJ source directory"
         exit 1
     fi
 
     # clone the requested git repo -- if ovjTools doesnt exist, clone it too
-    if [ ! -d "${OVJ_BUILDDIR}/ovjTools" ]; then
+    if [ ! -d "${OVJ_TOOLS}" ]; then
         log_cmd git clone --branch "${OVJT_GITBRANCH}" --depth "${OVJT_GITDEPTH}" "${OVJT_GITURL}" || return $?
     fi
 
     # get the git tag for ovjTools
-    log_cmd cd "${OVJ_BUILDDIR}/ovjTools/" || return $?
+    log_cmd cd "${OVJ_TOOLS}/" || return $?
     log_info "building with ovjTools: $(git describe --exact-match --tags 2>/dev/null || git log -n1 --pretty='%h')"
 
     # ok done
@@ -181,13 +185,29 @@ do_checkout () {
 do_build () {
     # check that the source, OpenVnmrJ, exists in ${OVJ_BUILDDIR}
     # check that the thing actually checked out an OpenVnmrJ directory
-    if [ ! -d "${OVJ_BUILDDIR}/OpenVnmrJ/src/vnmr" ]; then
-        log_error "build: '${OVJ_BUILDDIR}/OpenVnmrJ/' is not a valid OpenVnmrJ source directory"
+    if [ ! -d "${OVJ_ROOT}/src/vnmr" ]; then
+        log_error "build: '${OVJ_ROOT}' is not a valid OpenVnmrJ source directory"
         exit 1
     fi
 
     # go where the action is
-    log_cmd cd "${OVJ_BUILDDIR}/OpenVnmrJ/" || return $?
+    log_cmd cd "${OVJ_ROOT}/" || return $?
+
+    # if there are build options, create a new buildoptions.py
+    if [ ! -z "$OVJ_BUILDOPTS" ]; then
+        cat <<EOF > buildoptions.py
+opts = Options()
+boEnv = Environment(options = opts,
+EOF
+        for opt in $OVJ_BUILDOPTS; do
+            cat <<EOF >> buildoptions.py
+                    ${opt}='y'
+EOF
+        done
+        cat <<EOF >> buildoptions.py
+                    )
+EOF
+    fi
 
     # if src/ reset requested, reset it
     if [ "${OVJ_SRCRESET}" = yes ]; then
@@ -195,8 +215,8 @@ do_build () {
         log_cmd cd "${OVJ_BUILDDIR}/" || return $?
         log_cmd rm -rf dvdimage* options vnmr console
 
-        log_warn "build: wiping OpenVnmrJ/src directory to fresh state"
-        log_cmd cd "${OVJ_BUILDDIR}/OpenVnmrJ/" || return $?
+        log_warn "build: wiping OpenVnmrJ/src/ directory to fresh state"
+        log_cmd cd "${OVJ_ROOT}/" || return $?
         log_cmd rm -rf src
         log_cmd git checkout ./src || return $?
     fi
@@ -224,12 +244,12 @@ do_package () {
     # args
     local PACK_SCRIPT="$1"
     local OUTPUT_PREFIX="$2"
-    local PACK_SCRIPT_SRC="${OVJ_BUILDDIR}/OpenVnmrJ/src/scripts/${PACK_SCRIPT}"
+    local PACK_SCRIPT_SRC="${OVJ_ROOT}/src/scripts/${PACK_SCRIPT}"
     # used by a sub-script (?)
     local workspacedir="${OVJ_BUILDDIR}"
 
     # get the git tag for this version
-    log_cmd cd "${OVJ_BUILDDIR}/OpenVnmrJ/"
+    log_cmd cd "${OVJ_ROOT}/"
     OVJ_VERSION_STR="$(git describe --exact-match --tags 2>/dev/null || git log -n1 --pretty='%h')"
 
     log_info "package: packing using ${PACK_SCRIPT} -> ${OUTPUT_PREFIX}_${OVJ_VERSION_STR}"
@@ -275,11 +295,11 @@ do_package () {
 # what you really want...
 if [ x"${OVJ_BUILDDIR}" = x ] && [ x"${OVJ_TOOLS}" = x ]; then
     if [ -d OpenVnmrJ ] && [ -d ovjTools ] ; then
-        OVJ_BUILDDIR="$(pwd)"
+        OVJ_BUILDDIR=$(pwd)
     else
-        OVJ_BUILDDIR="$(dirname "$(dirname "$SCRIPTDIR")")"
+        OVJ_BUILDDIR=$(dirname "$(dirname "$SCRIPTDIR")")
     fi
-    OVJ_TOOLS="${OVJ_BUILDDIR}/ovjTools"
+    OVJ_TOOLS=${OVJ_BUILDDIR}/ovjTools
     echo "${yellow}OVJ_BUILDDIR=${OVJ_BUILDDIR}${normal}"
     echo "${yellow}OVJ_TOOLS=${OVJ_TOOLS}${normal}"
 elif [ -d "${OVJ_BUILDDIR}" ] && [ -d "${OVJ_TOOLS}" ]; then
@@ -289,17 +309,21 @@ elif [ x"${OVJ_BUILDDIR}" = x ] && [ -d "${OVJ_TOOLS}" ]; then
     # create OVJ_BUILDDIR if it's set and doesn't exist
     OVJ_BUILDDIR=$(dirname "${OVJ_TOOLS}")
 elif [ -d "${OVJ_BUILDDIR}" ] && [ x"${OVJ_TOOLS}" = x ]; then
-    echo "OVJ_TOOLS not set, assuming OVJ_TOOLS=[${OVJ_TOOLS}]"
     OVJ_TOOLS="${OVJ_BUILDDIR}/ovjTools"
+    echo "OVJ_TOOLS not set, assuming OVJ_TOOLS=[${OVJ_TOOLS}]"
 fi
 
+# validate path variables
 if [ ! -d "${OVJ_BUILDDIR}" ]; then
     echo "OVJ_BUILDDIR [${OVJ_BUILDDIR}] doesn't exist, creating..."
     echo mkdir -p "OVJ_BUILDDIR"
 fi
-
-if [ "${OVJ_BUILDDIR}/ovjTools" != "${OVJ_TOOLS}" ]; then
+if [ ! "${OVJ_BUILDDIR}" -ef "${OVJ_TOOLS}/.." ]; then
     echo "\$OVJ_TOOLS must be a direct subdir of \$OVJ_BUILDDIR"
+    exit 1
+fi
+if [ ! "${OVJ_BUILDDIR}" -ef "${OVJ_ROOT}/.." ]; then
+    echo "\$OVJ_ROOT must be a direct subdir of \$OVJ_BUILDDIR"
     exit 1
 fi
 
