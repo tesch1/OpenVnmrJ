@@ -242,21 +242,20 @@ EOF
 #
 do_package () {
     # args
-    local PACK_SCRIPT="$1"
-    local OUTPUT_PREFIX="$2"
+    local PACK_SCRIPT=$1
+    local OUTPUT_PREFIX=$2
     local PACK_SCRIPT_SRC="${OVJ_ROOT}/src/scripts/${PACK_SCRIPT}"
     # used by a sub-script (?)
     local workspacedir="${OVJ_BUILDDIR}"
 
     # get the git tag for this version
     log_cmd cd "${OVJ_ROOT}/"
-    : ${OVJ_VERSION_STR="_$(git describe --exact-match --tags 2>/dev/null || git log -n1 --pretty='%h')"}
 
-    log_info "package: packing using ${PACK_SCRIPT} -> ${OUTPUT_PREFIX}_${OVJ_VERSION_STR}"
+    log_info "package: packing using ${PACK_SCRIPT} -> ${OUTPUT_PREFIX}"
 
-    local dvdBuildName1=${OUTPUT_PREFIX}${OVJ_VERSION_STR}  # used in ovjmacout.sh,ovjddrout.sh
-    local dvdBuildName2=${OUTPUT_PREFIX}${OVJ_VERSION_STR}  # used in ovjmiout.sh
-    local ovjAppName=OpenVnmrJ${OVJ_VERSION_STR}.app
+    local dvdBuildName1=${OUTPUT_PREFIX}  # used in ovjmacout.sh,ovjddrout.sh
+    local dvdBuildName2=${OUTPUT_PREFIX}  # used in ovjmiout.sh
+    local ovjAppName=OpenVnmrJ.app
     #local shortDate
     #shortDate=$(date +%F)
 

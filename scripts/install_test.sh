@@ -284,8 +284,8 @@ for ACTION in $ACTIONS ; do
                 usage
                 ;;
         esac
-        cmdspin ${ovjBuildDir}/dvdimage${SUFX}_*/code/ins_vnmr "${OVJ_OS}" "${OVJ_CONSOLE}" \
-                ${ovjBuildDir}/dvdimage${SUFX}_*/code "${OVJ_PREFIX:?}/${OVJ_VERSION:?}" \
+        cmdspin ${ovjBuildDir}/dvdimage${SUFX}/code/ins_vnmr "${OVJ_OS}" "${OVJ_CONSOLE}" \
+                ${ovjBuildDir}/dvdimage${SUFX}/code "${OVJ_PREFIX:?}/${OVJ_VERSION:?}" \
                 "${OVJ_NMRADMIN}" "${OVJ_NMRGROUP}" "${OVJ_PREFIX}" "${OVJ_SETVNMRLINK}" no \
                 "+$(join_by + "${OVJ_INS_LIST[@]}")" "+$(join_by + "${OVJ_INS_OPTS[@]}")"
         retval=$?
