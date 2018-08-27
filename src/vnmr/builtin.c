@@ -2298,41 +2298,34 @@ static int countitems(char *dirname)
 |	in the selected directory
 |
 +-----------------------------------------------------------------------*/
-static int nodotfiles(const struct dirent * dp) { return dp->d_name[0] != '.'; }
-static int getitem(char *dirname, int index, char filename[])
+static int getitem(char *dirname, int index, char filename[])	
 {
-  int             temp;
-  struct dirent **namelist;
-  int             n;
+    DIR            *dirp;
+    struct dirent  *dp;
+    int             temp;
 
-  /* make index 0-based */
-  index--;
-
-  if (-1 != (n = scandir(dirname, &namelist, nodotfiles, alphasort)))
-  {
-    if (index >= 0 && index < n)
-      strcpy(filename, namelist[index]->d_name);
-
-    /* cleanup for scandir */
-    for (temp = 0; temp < n; temp++) {
-      free(namelist[temp]);
-    }
-    free(namelist);
-
-    /* return */
-    if (index >= 0 && index < n)
-      RETURN;
-    else
+    if ( (dirp = opendir(dirname)) )
     {
-      Werrprintf("cannot get item %d from %s",index+1,dirname);
-      ABORT;
+      dp = NULL;
+      temp = 0;
+      while ((temp < index) && ((dp = readdir(dirp)) != NULL))
+        if (*dp->d_name != '.')  /* no . files */
+          temp++;
+      if ((index == temp) && (dp != NULL))
+        strcpy(filename,dp->d_name);
+      else
+      {
+        closedir(dirp);
+        Werrprintf("cannot get item %d from %s",index,dirname);
+	ABORT;
+      }	
+      closedir(dirp);
+      RETURN;
     }
-  }
-  else
-  {
-    Werrprintf("trouble opening %s",dirname);
-    ABORT;
-  }
+    else
+    {	Werrprintf("trouble opening %s",dirname);
+	ABORT;
+    }	
 }
 
 /*------------------------------------------------------------------------
