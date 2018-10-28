@@ -19,7 +19,7 @@
 #  etc
 #  Add more values as needed 
 #
-
+import os
 opts = Options()
 boEnv = Environment(options = opts,
                 apt_0='n',
@@ -46,6 +46,7 @@ boEnv = Environment(options = opts,
                 MR400FH='n',
                 NDDS_VERSION='4.2e',
                 NDDS_LIB_VERSION='i86Linux2.6gcc3.4.3',
+                ovjConsole=os.getenv('ovjConsole', default='y'),
                 P11='n',
                 PATENT='n',
                 PFG='n',

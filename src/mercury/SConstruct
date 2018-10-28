@@ -19,6 +19,12 @@ cwd = os.getcwd()
 dirList2 = [ 'parlib',
             ]
 
+# get build options settings
+boFile=os.path.join(cwd,os.pardir,os.pardir,'buildoptions.py')
+if not os.path.exists(boFile):
+   boFile=os.path.join(cwd,os.pardir,os.pardir,'scripts','buildoptions.py')
+execfile(boFile)
+
 # define with absolute path where built files will be copied
 # define with absolute path where built files will be copied
 #consolePath = os.path.join(cwd, os.pardir, os.pardir, os.pardir,
@@ -64,10 +70,7 @@ if not os.path.exists(consolePath):
    os.makedirs(consolePath)
 os.system('cp  global '+os.path.join(consolePath,'global'))
 
-ovjconsole=os.getenv('ovjConsole')
-if not ovjconsole:
-    ovjconsole = "yes"
-if (ovjconsole!="yes"):
+if boEnv['ovjConsole'] != 'y':
     print "Mercury console software not requested."
     sys.exit(0)
 

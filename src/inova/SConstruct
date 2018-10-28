@@ -24,6 +24,12 @@ dirList2 = [ 'maclib',
              'parlib',
             'templates']
 
+# get build options settings
+boFile=os.path.join(cwd,os.pardir,os.pardir,'buildoptions.py')
+if not os.path.exists(boFile):
+   boFile=os.path.join(cwd,os.pardir,os.pardir,'scripts','buildoptions.py')
+execfile(boFile)
+
 # define with absolute path where built files will be copied
 # consolePath = os.path.join(cwd, os.pardir, os.pardir, os.pardir,
 #                          'console', 'inova','acq')
@@ -62,10 +68,7 @@ if not os.path.exists(consolePath):
    os.makedirs(consolePath)
 Execute(Copy(os.path.join(consolePath,'ExperimentSelector.xml'),os.path.join(cwd,'biopack','ExperimentSelector.xml')))
 
-ovjconsole=os.getenv('ovjConsole')
-if not ovjconsole:
-    ovjconsole = "yes"
-if (ovjconsole!="yes"):
+if boEnv['ovjConsole'] != 'y':
     print "Inova console software not requested."
     sys.exit(0)
 

@@ -278,10 +278,7 @@ nvexpProcCEnv.AddPostAction(expproc,
                               Action(Copy(os.path.join(vnmrInstallPath,'Expproc'),
                                           os.path.join(cwd, expProcTarget))))
 
-ovjconsole=os.getenv('ovjConsole')
-if not ovjconsole:
-    ovjconsole = "yes"
-if (ovjconsole!="yes"):
+if boEnv['ovjConsole'] != "y":
     print "DDR console software not requested."
     sys.exit(0)
 
