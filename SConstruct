@@ -34,17 +34,7 @@ import string
 import subprocess
 
 execfile(os.path.join('scripts', 'buildoptions.py'))
-
-ovjtools=os.getenv('OVJ_TOOLS')
-if not ovjtools:
-    print "OVJ_TOOLS env not found."
-    print "For bash and variants, use export OVJ_TOOLS=<path>"
-    print "For csh and variants,  use setenv OVJ_TOOLS <path>"
-    sys.exit(1)
-
-if not os.path.exists(ovjtools):
-    print "OVJ_TOOLS path "+ovjtools+" not found."
-    sys.exit(1)
+ovjtools = bo.OVJ_TOOLS
 
 # os.environ['OPENVNMRJ']="true"
 # os.environ['OPENVNMRJ_GSL']="false"
@@ -235,11 +225,11 @@ if os.path.exists(javaLink) or 'linux' not in platform:
 else:
    print "java link in "+ovjtools+" not found. Skipping java compiles"
 
-if ( os.path.exists(os.path.join('/usr','include','gsl')) ):
+if boEnv['gsl']:
    for i in gslBuildList:
       SConscript(os.path.join('src',i, 'SConstruct'))
 else:
-   print "gsl includes not found. Skipping compiles requiring gsl"
+    print "Skipping gsl builds"
 
 vnmrPath    = os.path.join(cwd, os.pardir,'vnmr')
 
@@ -254,14 +244,11 @@ if 'darwin' not in platform:
    wkLink = os.path.join(ovjtools, 'wkhtmltopdf')
    if os.path.exists(wkLink):
       binPath = os.path.join(vnmrPath, 'bin')
-      if not os.path.exists(binPath):
-         os.makedirs(binPath)
-      cmd = 'cp '+wkLink+'/wkhtmltopdf '+binPath+';chmod 755 '+binPath+'/wkhtmltopdf'
-#     print "cmd: ",cmd
-      os.system(cmd)
-      cmd = 'cp '+wkLink+'/wkhtmltopdf-i386 '+binPath+';chmod 755 '+binPath+'/wkhtmltopdf-i386'
-#     print "cmd: ",cmd
-      os.system(cmd)
+      Execute(Mkdir(binPath))
+      cmd = 'cp '+wkLink+'/wkhtmltopdf '+binPath+' && chmod 755 '+binPath+'/wkhtmltopdf'
+      Execute(cmd)
+      cmd = 'cp '+wkLink+'/wkhtmltopdf-i386 '+binPath+' && chmod 755 '+binPath+'/wkhtmltopdf-i386'
+      Execute(cmd)
 
 # end of if platform group
 
@@ -285,15 +272,14 @@ if 'darwin' not in platform:
 # os.chmod(vnmrtmpPath,0777)
 
 vnmrSha1Path = os.path.join(vnmrPath,'adm','sha1')
-if not os.path.exists(vnmrSha1Path):
-   os.makedirs(vnmrSha1Path)
+Execute(Mkdir(vnmrSha1Path))
 
 def runSconsPostAction(dir):
    dirList = os.listdir(dir)
    for i in dirList:
       sconsFile = os.path.join(dir,i,'sconsPostAction')
       if os.path.exists(sconsFile):
-         cmd='cd '+os.path.join(dir,i)+';chmod +x sconsPostAction; ./sconsPostAction; rm sconsPostAction'
+         cmd='cd '+os.path.join(dir,i)+' && chmod +x sconsPostAction && ./sconsPostAction && rm sconsPostAction'
          print "cmd: ",cmd
          os.system(cmd)
 
@@ -303,14 +289,15 @@ def afterScons():
    runSconsPostAction(os.path.join(vnmrPath, 'craft'))
 
    print "Build ID file"
-   command = 'cd scripts; ./genBuildId.pl'
+   command = 'cd scripts && ./genBuildId.pl'
    idproc = subprocess.Popen( command, shell=True)
    status = os.waitpid(idproc.pid, 0)
 
    print "Build Sha1 SnapShot of files"
-   command = 'cd scripts; ./createSha1ChkList.sh'
+   command = 'cd scripts && ./createSha1ChkList.sh '+bo.prefix
    idproc = subprocess.Popen( command, shell=True)
    status = os.waitpid(idproc.pid, 0)
 
-import atexit
-atexit.register(afterScons)
+if not GetOption('no_exec'):
+    import atexit
+    atexit.register(afterScons)
