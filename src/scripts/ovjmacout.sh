@@ -148,15 +148,13 @@ cp "${gitdir}/src/macos/sys_tmplt" profiles/system/.
 cp "${gitdir}/src/macos/user_tmplt" profiles/user/.
 
 #Following need a certificate issued by Apple to developer
-echo "Code signing requires a certificate issued by Apple. Check for any errors and fix for OS X El Capitan or macOS Sierra"
-codesign -s "3rd Party Mac Developer Application:" --entitlements "${gitdir}/src/macos/entitlement.plist" "${packagedir}/${ovjAppName}"
-
-
-if [[ -f /usr/local/bin/packagesbuild ]]
+if [ "x${OVJ_CODESIGN}" != "x" ] && [ "x${OVJ_CODESIGN}" != "xnone" ]
 then
-   echo "Making MacOS package of OpenVnmrJ"
-   /usr/local/bin/packagesbuild -v -F "${workspacedir}" "${gitdir}/src/macos/ovjpkg.pkgproj"
+    echo "Code signing requires a certificate issued by Apple." \
+         "Check for any errors and fix for OS X El Capitan or macOS Sierra"
+    codesign -s "${OVJ_CODESIGN}" \
+             --entitlements "${gitdir}/src/macos/entitlement.plist" \
+             "${packagedir}/${ovjAppName}"
 else
-   echo "MacOS Packages.app not installed"
-   echo "Cannot build OpenVnmrJ pkg"
+    echo "Skipping code signing, empty identity in OVJ_CODESIGN"
 fi
