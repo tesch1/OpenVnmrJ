@@ -351,7 +351,7 @@ if [ "${OVJ_DO_PACKAGE}" = yes ]; then
             do_package ovjddrout.sh dvdimageOVJ
         fi
     fi
-    if [ "${OVJ_PACK_MINOVA}" = yes ]; then
+    if [ "${OVJ_PACK_MINOVA}" = yes ] && [ "x$(uname -s)" != "xDarwin" ]; then
         log_info "Packaging MERCURY/INOVA"
         do_package ovjmiout.sh dvdimageOVJMI
     fi
