@@ -9,6 +9,8 @@
 # For more information, see the LICENSE file.
 # 
 
+set -ex
+
 # Default Declarations
 #
 
@@ -46,7 +48,7 @@ mkdir -p "${packagedir}/$ovjAppName/Contents/MacOS"
 cp VJ "${packagedir}/$ovjAppName/Contents/MacOS/."
 rm -f "${vnmrdir}/bin/convert"
 #cp convert $vnmrdir/bin/.
-tar jxf ImageMagick.tar.bz2 -C $vnmrdir
+tar jxf ImageMagick.tar.bz2 -C "$vnmrdir"
 # rm -rf "${vnmrdir}/jre"
 # cp $JAVA_HOME/jre $vnmrdir/
 
@@ -108,36 +110,33 @@ printf "fi\n" >> $postinstall
 
 chmod +x $postinstall
 
-cd "$vnmrdir"; tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir"; tar xpf -)
-cd "$ddrconsoledir"; tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir"; tar xpf -)
-rm -rf $vjdir/craft/Bayes3
+cd "$vnmrdir"; tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir" && tar xpf -)
+cd "$ddrconsoledir"; tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir" && tar xpf -)
 
-optionslist=`ls $standardsdir`
-for file in $optionslist
+ls "$standardsdir" | while read -r file
 do
-   if [ $file != "P11" ]
+   if [ "$file" != "P11" ]
    then
       cd "${standardsdir}/${file}"
-      tar cf - --exclude .gitignore --exclude "._*" . | (cd "${vjdir}"; tar xpf -)
+      tar cf - --exclude .gitignore --exclude "._*" . | (cd "${vjdir}" && tar xpf -)
    fi
 done
-optionslist=`ls $optddrdir`
-for file in $optionslist
+ls "$optddrdir" | while read -r file
 do
-   if [ $file != "P11" ]
+   if [ "$file" != "P11" ]
    then
-      cd $optddrdir/$file
-      tar cf - --exclude .gitignore --exclude "._*" . | (cd $vjdir; tar xpf -)
+      cd "${optddrdir}/${file}"
+      tar cf - --exclude .gitignore --exclude "._*" . | (cd "$vjdir" && tar xpf -)
    fi
 done
 
-cd $gitdir/src/macos
-rm -f $vjdir/bin/vnmrj
-cp vnmrj.sh $vjdir/bin/vnmrj
-chmod 755 $vjdir/bin/vnmrj
+cd "$gitdir/src/macos"
+rm -f "$vjdir/bin/vnmrj"
+cp vnmrj.sh "$vjdir/bin/vnmrj"
+chmod 755 "$vjdir/bin/vnmrj"
 
-echo "vnmrs" >> $vjdir/vnmrrev 
-cd $vjdir/adm/users
+echo "vnmrs" >> "$vjdir/vnmrrev"
+cd "$vjdir/adm/users"
 cat userDefaults | sed '/^home/c\
 home    yes     no      /Users/$accname\
 ' > userDefaults.bak
@@ -155,6 +154,19 @@ then
     codesign -s "${OVJ_CODESIGN}" \
              --entitlements "${gitdir}/src/macos/entitlement.plist" \
              "${packagedir}/${ovjAppName}"
+    PKGSIGN=--sign
 else
     echo "Skipping code signing, empty identity in OVJ_CODESIGN"
+    PKGSIGN=
+    OVJ_CODESIGN=
 fi
+
+# make the install .pkg
+#         ${PKGSIGN} "${OVJ_CODESIGN}" 
+
+pkgname=${packagedir}/$(basename "$ovjAppName" .app)
+pkgbuild --install-location /Applications \
+         --scripts "$resdir" \
+         --version "1.1a" \
+         --identifier "org.OpenVnmrJ.${ovjAppName}" \
+         --component "${packagedir}/${ovjAppName}" "${pkgname}.pkg"
