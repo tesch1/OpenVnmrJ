@@ -25,7 +25,8 @@ trap onerror ERR
 
 : "${ACTIONS="install test"}"
 : "${FORCE=no}"
-: "${OVJ_VERSION=openvnmrj_1.1_A}"
+: "${OVJ_VERSION_STR=_1.1a}"
+: "${OVJ_VERSION=openvnmrj${OVJ_VERSION_STR}}"
 : "${VERBOSE=3}"
 : "${OVJ_SUPERCLEAN=no}"
 : "${OVJ_PASSWD=vnmrx}"
@@ -210,6 +211,139 @@ is_ovj_installed() {
         getent passwd vnmr1 > /dev/null 2>&1
 }
 
+unix_install() {
+    # First, create the user vnmr1.  Also, before running the OVJ
+    # installation script, you may need to create the "nmr" group.
+    log_cmd groupadd nmr || log_error "'groupadd nmr' failed, ignoring..." || true
+
+    # create two users - vnmr1 is special, testuser is normal
+    for user in vnmr1 testuser ; do
+        log_info "Creating unix user '$user'"
+        # bug workaround: ubuntu sometimes doesnt reasonably set login shell
+        useradd -s /bin/bash -m "$user"
+        log_info "Setting default password for $user"
+        echo -e "${OVJ_PASSWD}\\n${OVJ_PASSWD}" | passwd "$user"
+        log_info "Adding '$user' to group 'nmr'"
+        usermod -a -G nmr "$user"
+    done
+
+    # Then, as root, cd into the dvdimageOVJ and run the script.
+    #
+    # The part in bold should be changed to the correct directory
+    # where the dvdimageOVJ is at or put the dvdimageOVJ into the /tmp
+    # directory.
+    case "${OVJ_CONSOLE}" in
+        inova|mercplus|g2000)                   SUFX=OVJMI ;;
+        propulse|mr400|mr400dd2|vnmrs|vnmrsdd2) SUFX=OVJ   ;;
+        *)
+            log_error "unrecognized OVJ_CONSOLE: ${OVJ_CONSOLE}"
+            usage
+            ;;
+    esac
+    cmdspin ${ovjBuildDir}/dvdimage${SUFX}_*/code/ins_vnmr "${OVJ_OS}" "${OVJ_CONSOLE}" \
+            ${ovjBuildDir}/dvdimage${SUFX}_*/code "${OVJ_HOME}/${OVJ_VERSION}" \
+            "${OVJ_NMRADMIN}" "${OVJ_NMRGROUP}" "${OVJ_HOME}" "${OVJ_SETVNMRLINK}" no \
+            "+$(join_by + "${OVJ_INS_LIST[@]}")" "+$(join_by + "${OVJ_INS_OPTS[@]}")"
+    retval=$?
+
+    if [ $retval = 0 ]; then
+        log_warn "install script ins_vnmr success."
+    else
+        log_warn "install script ins_vnmr failed, tail log:"
+        tail -50 /tmp/ovjlog
+        exit $retval
+    fi
+
+    # Create users vnmr1 and testuser
+    for user in vnmr1 testuser ; do
+        log_info "Setting up user '$user'"
+
+        # The script /vnmr/bin/makeuser <username> (from
+        # OpenVnmrJ/src/scripts) will create users and configure
+        # their home accounts.
+        log_cmd /vnmr/bin/makeuser "$user" /home nmr y /vnmr
+
+        # The script /vnmr/bin/ovjUser <username> (also from
+        # OpenVnmrJ/src/scripts) will add the necessary files to
+        # /vnmr/adm.
+        log_cmd sudo -u vnmr1 /vnmr/bin/ovjUser $user
+
+        # make sure .vnmrenvsh is there & run on login (should
+        # move this to /vnmr/bin/makeuser)
+        if [ ! -f "$(eval echo "~$user")"/.vnmrenvsh ]; then
+            sudo -u $user cp /vnmr/user_templates/.vnmrenvsh "$(eval echo "~$user")/"
+            echo "[ -f ~/.vnmrenvsh ] && source ~/.vnmrenvsh" >> "$(eval echo "~$user")/.bashrc"
+        fi
+    done
+}
+
+macos_install() {
+    # which dvd dir to use - should always be OVJ for now...
+    case "${OVJ_CONSOLE}" in
+        inova|mercplus|g2000)                   SUFX=OVJMI ;;
+        propulse|mr400|mr400dd2|vnmrs|vnmrsdd2) SUFX=OVJ   ;;
+        *)
+            log_error "unrecognized OVJ_CONSOLE: ${OVJ_CONSOLE}"
+            usage
+            ;;
+    esac
+
+    # find the .pkg file
+    PKGFILE="${ovjBuildDir}/dvdimage${SUFX}${OVJ_VERSION_STR}/Package_contents/OpenVnmrJ${OVJ_VERSION_STR}.pkg"
+
+    # install the .pkg file
+    log_cmd sudo installer -verboseR -allowUntrusted -pkg "$PKGFILE" -target /
+}
+
+unix_uninstall() {
+    log_info "Uninstalling ${OVJ_VERSION}"
+
+    if [ $FORCE != yes ]; then
+        log_error "Unforced uninstall, skipping"
+        return 0
+    fi
+
+    # delete system varian stuff
+    rm -f /vnmr
+    rm -rf /usr/varian
+    rm -rf "/home/${OVJ_VERSION:?}" || return $?
+
+    # remove users and groups
+    killall -u vnmr1     && log_warn "Killed procs belonging to 'vnmr1'" || true
+    killall -u testuser  && log_warn "Killed procs belonging to 'testuser'" || true
+    gpasswd -d vnmr1 nmr || log_error "Unable to remove 'vnmr1' from 'nmr' group" || return $?
+    userdel vnmr1        || log_error "Unable to delete user 'vnmr1'" || return $?
+    userdel testuser     || log_error "Unable to delete user 'testuser'" || return $?
+    groupdel nmr         || log_error "Unable to delete group 'nmr'" || return $?
+    #vrun 'sudo groupdel vnmr1' || return $?
+
+    # remove the associated home directories
+    if [ ${OVJ_SUPERCLEAN} = yes ]; then
+        rm -rf ~vnmr1
+        rm -rf ~testuser
+    fi
+}
+
+macos_uninstall() {
+    log_info "Uninstalling ${OVJ_VERSION}"
+
+    if [ $FORCE != yes ]; then
+        log_error "Unforced uninstall, skipping"
+        return 0
+    fi
+
+    # kill vnmr1's procs
+    killall -u vnmr1     && log_warn "Killed procs belonging to 'vnmr1'" || true
+
+    # remove the package
+    true 
+
+    # remove the associated home directories
+    if [ ${OVJ_SUPERCLEAN} = yes ]; then
+        rm -rf ~vnmr1 || return $?
+    fi
+}
+
 join_by() { local IFS="$1"; shift; echo "$*"; }
 
 #######################################################################
@@ -222,7 +356,7 @@ log_setup "${OVJ_LOGFILE}" "${ovjBuildDir}/logs"
 
 # verify ovjBuildDir and that build completed
 if ! [ -f "${ovjBuildDir}/vnmr/adm/sha1/sha1chklistFiles.txt" ]; then
-    log_error "missing sha1chklistFiles.txt in \${ovjBuildDir}, invalid build directory"
+    log_error "missing sha1chklistFiles.txt in \${ovjBuildDir}, invalid build directory" || true
     log_error " did the build complete in '${ovjBuildDir}'?"
     exit 1
 fi
@@ -253,98 +387,18 @@ for ACTION in $ACTIONS ; do
             fi
         fi
 
-        # First, create the user vnmr1.  Also, before running the OVJ
-        # installation script, you may need to create the "nmr" group.
-        log_cmd groupadd nmr || log_error "'groupadd nmr' failed, ignoring..."
-
-        # create two users - vnmr1 is special, testuser is normal
-        for user in vnmr1 testuser ; do
-            log_info "Creating unix user '$user'"
-            # bug workaround: ubuntu sometimes doesnt reasonably set login shell
-            useradd -s /bin/bash -m "$user"
-            log_info "Setting default password for $user"
-            echo -e "${OVJ_PASSWD}\\n${OVJ_PASSWD}" | passwd "$user"
-            log_info "Adding '$user' to group 'nmr'"
-            usermod -a -G nmr "$user"
-        done
-
-        # Then, as root, cd into the dvdimageOVJ and run the script.
-        #
-        # The part in bold should be changed to the correct directory
-        # where the dvdimageOVJ is at or put the dvdimageOVJ into the /tmp
-        # directory.
-        case "${OVJ_CONSOLE}" in
-            inova|mercplus|g2000)                   SUFX=OVJMI ;;
-            propulse|mr400|mr400dd2|vnmrs|vnmrsdd2) SUFX=OVJ   ;;
-            *)
-                log_error "unrecognized OVJ_CONSOLE: ${OVJ_CONSOLE}"
-                usage
-                ;;
-        esac
-        cmdspin ${ovjBuildDir}/dvdimage${SUFX}_*/code/ins_vnmr "${OVJ_OS}" "${OVJ_CONSOLE}" \
-                ${ovjBuildDir}/dvdimage${SUFX}_*/code "${OVJ_HOME}/${OVJ_VERSION}" \
-                "${OVJ_NMRADMIN}" "${OVJ_NMRGROUP}" "${OVJ_HOME}" "${OVJ_SETVNMRLINK}" no \
-                "+$(join_by + "${OVJ_INS_LIST[@]}")" "+$(join_by + "${OVJ_INS_OPTS[@]}")"
-        retval=$?
-
-        if [ $retval = 0 ]; then
-            log_warn "install script ins_vnmr success."
+        if [ "$(uname -s)" = Darwin ]; then
+            macos_install
         else
-            log_warn "install script ins_vnmr failed, tail log:"
-            tail -50 /tmp/ovjlog
-            exit $retval
+            unix_install
         fi
-
-        # Create users vnmr1 and testuser
-        for user in vnmr1 testuser ; do
-            log_info "Setting up user '$user'"
-
-            # The script /vnmr/bin/makeuser <username> (from
-            # OpenVnmrJ/src/scripts) will create users and configure
-            # their home accounts.
-            log_cmd /vnmr/bin/makeuser "$user" /home nmr y /vnmr
-
-            # The script /vnmr/bin/ovjUser <username> (also from
-            # OpenVnmrJ/src/scripts) will add the necessary files to
-            # /vnmr/adm.
-            log_cmd sudo -u vnmr1 /vnmr/bin/ovjUser $user
-
-            # make sure .vnmrenvsh is there & run on login (should
-            # move this to /vnmr/bin/makeuser)
-            if [ ! -f "$(eval echo "~$user")"/.vnmrenvsh ]; then
-                sudo -u $user cp /vnmr/user_templates/.vnmrenvsh "$(eval echo "~$user")/"
-                echo "[ -f ~/.vnmrenvsh ] && source ~/.vnmrenvsh" >> "$(eval echo "~$user")/.bashrc"
-            fi
-        done
 
     elif [ $ACTION = uninstall ]; then
-        log_info "Uninstalling ${OVJ_VERSION}"
-
-        if [ $FORCE != yes ]; then
-            log_error "Unforced uninstall, skipping"
-            continue
+        if [ "$(uname -s)" = Darwin ]; then
+            macos_uninstall
+        else
+            unix_uninstall
         fi
-
-        # delete system varian stuff
-        rm -f /vnmr
-        rm -rf /usr/varian
-        rm -rf "/home/${OVJ_VERSION:?}"
-
-        # remove users and groups
-        killall -u vnmr1     && log_warn "Killed procs belonging to 'vnmr1'" || true
-        killall -u testuser  && log_warn "Killed procs belonging to 'testuser'" || true
-        gpasswd -d vnmr1 nmr || log_error "Unable to remove 'vnmr1' from 'nmr' group"
-        userdel vnmr1        || log_error "Unable to delete user 'vnmr1'"
-        userdel testuser     || log_error "Unable to delete user 'testuser'"
-        groupdel nmr         || log_error "Unable to delete group 'nmr'"
-        #vrun 'sudo groupdel vnmr1' || return $?
-
-        # remove the associated home directories
-        if [ ${OVJ_SUPERCLEAN} = yes ]; then
-            rm -rf ~vnmr1
-            rm -rf ~testuser
-        fi
-
         log_warn "Successfully uninstalled '${OVJ_VERSION}'"
 
     elif [ $ACTION = test ]; then

@@ -90,7 +90,7 @@ log_msg_ () {
         echo "${LEVELCOLOR[level]}${LEVELNAMES[level]}:${message}${normal}" >&3
     fi
 }
-log_error () { log_msg_ 0 "$*" ; ERRCOUNT=$(( ERRCOUNT + 1 )) ; }
+log_error () { log_msg_ 0 "$*" ; ERRCOUNT=$(( ERRCOUNT + 1 )) ; false ; }
 log_msg   () { log_msg_ 1 "$*" ; }
 log_warn  () { log_msg_ 2 "$*" ; }
 log_info  () { log_msg_ 3 "$*" ; }

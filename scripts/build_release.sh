@@ -43,6 +43,7 @@ numcpus() {
 : ${OVJ_BUILDDIR=${ovjBuildDir}}
 : ${OVJ_DEVELOPER=OpenVnmrJ}
 : ${OVJ_GITBRANCH=master}
+: ${OVJ_VERSION_STR=_1.1a}
 : ${OVJ_GITURL="https://github.com/OpenVnmrJ/OpenVnmrJ.git"}
 : ${OVJ_GITDEPTH=3}
 : ${OVJT_GITBRANCH=master}
@@ -233,13 +234,13 @@ do_package () {
 
     # get the git tag for this version
     log_cmd cd "${OVJ_BUILDDIR}/OpenVnmrJ/"
-    OVJ_VERSION_STR="$(git describe --exact-match --tags 2>/dev/null || git log -n1 --pretty='%h')"
+    #OVJ_VERSION_STR="_$(git describe --exact-match --tags 2>/dev/null || git log -n1 --pretty='%h')"
 
-    log_info "package: packing using ${PACK_SCRIPT} -> ${OUTPUT_PREFIX}_${OVJ_VERSION_STR}"
+    log_info "package: packing using ${PACK_SCRIPT} -> ${OUTPUT_PREFIX}${OVJ_VERSION_STR}"
 
-    local dvdBuildName1=${OUTPUT_PREFIX}_${OVJ_VERSION_STR}  # used in ovjmacout.sh,ovjddrout.sh
-    local dvdBuildName2=${OUTPUT_PREFIX}_${OVJ_VERSION_STR}  # used in ovjmiout.sh
-    local ovjAppName=OpenVnmrJ_${OVJ_VERSION_STR}.app
+    local dvdBuildName1=${OUTPUT_PREFIX}${OVJ_VERSION_STR}  # used in ovjmacout.sh,ovjddrout.sh
+    local dvdBuildName2=${OUTPUT_PREFIX}${OVJ_VERSION_STR}  # used in ovjmiout.sh
+    local ovjAppName=OpenVnmrJ${OVJ_VERSION_STR}.app
     #local shortDate
     #shortDate=$(date +%F)
 
@@ -253,7 +254,7 @@ do_package () {
     log_cmd cd "${OVJ_BUILDDIR}/bin/"
 
     # export vars used by the ovj???out.sh ($PACK_SCRIPT) scripts
-    export workspacedir dvdBuildName1 dvdBuildName2 ovjAppName OVJ_TOOLS
+    export workspacedir dvdBuildName1 dvdBuildName2 ovjAppName OVJ_TOOLS OVJ_VERSION_STR
     cmdspin "${PACK_SCRIPT_SRC}" || return $?
 
     # make a second copy? make an iso? todo...
