@@ -43,35 +43,6 @@ OVJ_INS_LIST=("${OVJ_INS_LIST[@]:-${tmp[@]}}")
 tmp=()
 OVJ_INS_OPTS=("${OVJ_INS_OPTS[@]:-${tmp[@]}}")
 
-# set OVJ_TOOLS if necessary
-if [ "x${OVJ_TOOLS}" = "x" ] ; then
-    if [ -d "$SCRIPTDIR/../../ovjTools/vms" ]; then
-        cd "$SCRIPTDIR/../../ovjTools"
-        OVJ_TOOLS="$(pwd)"
-        echo "Setting OVJ_TOOLS to '${OVJ_TOOLS}'"
-        export OVJ_TOOLS
-    elif [ -d "$(pwd)/vms/box_defs" ]; then
-        OVJ_TOOLS="$(pwd)"
-        echo "Setting OVJ_TOOLS to '${OVJ_TOOLS}'"
-        export OVJ_TOOLS
-    else
-        echo "set OVJ_TOOLS environment variable to the ovjTools directory"
-        exit 1
-    fi
-else
-    # make sure it's set right
-    if ! [ -d "${OVJ_TOOLS}/vms/centos7" ]; then
-        echo "set OVJ_TOOLS environment variable to the ovjTools directory"
-        exit 1
-    fi
-fi
-
-# set ovjBuildDir if necessary
-if [ "x${ovjBuildDir}" = "x" ] ; then
-    cd "${OVJ_TOOLS}/.."
-    ovjBuildDir="$(pwd)"
-fi
-
 usage_msg() {
     cat <<EOF
 usage:
@@ -167,12 +138,13 @@ fi
 #
 # functions
 #
+homedir() { echo "$(eval echo "~$1")"; }
 
 add_appdir() {
     local user="$1"    # name of vnmr user
     local appdir="$2"  # path under $vnmruser
     local vnmrsystem=/vnmr
-    local vnmruser="$(eval echo "~$user")/vnmrsys"
+    local vnmruser="$(homedir "$user")/vnmrsys"
     local appdirfile="${vnmruser}/persistence/appdir_${user}"
     local appmode="${OVJ_SYSTEM}"
     if [ ! -d "$vnmruser" ]; then
@@ -197,7 +169,7 @@ vnmr_cmd() {
     #cmdspin sudo -i -u vnmr1 Vnmr -d -mserver -exec "$cmd" -exec exit
     #log_cmd sudo -i -u vnmr1 Vnmr -d -xserver -t vjqa
     #cmdspin sudo -i -u vnmr1 Vnmr -n0 -mback "$1"
-    cmdspin sudo -i -u vnmr1 Vnmr -mback "$1"
+    cmdspin sudo -i -u $VNMRUSER Vnmr -mback "$1"
 }
 
 is_ovj_installed() {
@@ -238,14 +210,6 @@ unix_install() {
     # The part in bold should be changed to the correct directory
     # where the dvdimageOVJ is at or put the dvdimageOVJ into the /tmp
     # directory.
-    case "${OVJ_CONSOLE}" in
-        inova|mercplus|g2000)                   SUFX=OVJMI ;;
-        propulse|mr400|mr400dd2|vnmrs|vnmrsdd2) SUFX=OVJ   ;;
-        *)
-            log_error "unrecognized OVJ_CONSOLE: ${OVJ_CONSOLE}"
-            usage
-            ;;
-    esac
     cmdspin ${ovjBuildDir}/dvdimage${SUFX}_*/code/ins_vnmr "${OVJ_OS}" "${OVJ_CONSOLE}" \
             ${ovjBuildDir}/dvdimage${SUFX}_*/code "${OVJ_HOME}/${OVJ_VERSION}" \
             "${OVJ_NMRADMIN}" "${OVJ_NMRGROUP}" "${OVJ_HOME}" "${OVJ_SETVNMRLINK}" no \
@@ -284,15 +248,6 @@ unix_install() {
 }
 
 macos_install() {
-    # which dvd dir to use - should always be OVJ for now...
-    case "${OVJ_CONSOLE}" in
-        inova|mercplus|g2000)                   SUFX=OVJMI ;;
-        propulse|mr400|mr400dd2|vnmrs|vnmrsdd2) SUFX=OVJ   ;;
-        *)
-            log_error "unrecognized OVJ_CONSOLE: ${OVJ_CONSOLE}"
-            usage
-            ;;
-    esac
 
     # find the .pkg file
     PKGFILE="${ovjBuildDir}/dvdimage${SUFX}${OVJ_VERSION_STR}/Package_contents/OpenVnmrJ${OVJ_VERSION_STR}.pkg"
@@ -338,15 +293,24 @@ macos_uninstall() {
         return 0
     fi
 
-    # kill vnmr1's procs
-    killall -u vnmr1     && log_warn "Killed procs belonging to 'vnmr1'" || true
+    # find the .pkg file
+    PKGFILE="${ovjBuildDir}/dvdimage${SUFX}${OVJ_VERSION_STR}/Package_contents/OpenVnmrJ${OVJ_VERSION_STR}.pkg"
 
+    # kill vnmr1's procs
+    #killall -u $VNMRUSER     && log_warn "Killed procs belonging to 'vnmr1'" || true
+
+    #
     # remove the package
-    true 
+    #
+
+    # get file list
+    log_info "not actually uninstalling, dumping file list to ${OVJ_VERSION_STR} to /tmp/ovjfiles.txt"
+    log_cmd sudo pkgutil --files "$PKGFILE" > /tmp/ovjfiles.txt
+    #log_cmd sudo pkgutil --forget "OpenVnmrJ${OVJ_VERSION_STR}.pkg"
 
     # remove the associated home directories
     if [ ${OVJ_SUPERCLEAN} = yes ]; then
-        rm -rf ~vnmr1 || return $?
+        rm -rf "$(homedir "$VNMRUSER")/vnmrsys" || return $?
     fi
 }
 
@@ -357,8 +321,54 @@ join_by() { local IFS="$1"; shift; echo "$*"; }
 # Main script starts here
 #
 
+# set OVJ_TOOLS if necessary
+if [ "x${OVJ_TOOLS}" = "x" ] ; then
+    if [ -d "$SCRIPTDIR/../../ovjTools/vms" ]; then
+        cd "$SCRIPTDIR/../../ovjTools"
+        OVJ_TOOLS="$(pwd)"
+        echo "Setting OVJ_TOOLS to '${OVJ_TOOLS}'"
+        export OVJ_TOOLS
+    elif [ -d "$(pwd)/vms/box_defs" ]; then
+        OVJ_TOOLS="$(pwd)"
+        echo "Setting OVJ_TOOLS to '${OVJ_TOOLS}'"
+        export OVJ_TOOLS
+    else
+        echo "set OVJ_TOOLS environment variable to the ovjTools directory"
+        exit 1
+    fi
+else
+    # make sure it's set right
+    if ! [ -d "${OVJ_TOOLS}/vms/centos7" ]; then
+        echo "set OVJ_TOOLS environment variable to the ovjTools directory"
+        exit 1
+    fi
+fi
+
 # setup the logfile
 log_setup "${OVJ_LOGFILE}" "${ovjBuildDir}/logs"
+
+# set ovjBuildDir if necessary
+if [ "x${ovjBuildDir}" = "x" ] ; then
+    cd "${OVJ_TOOLS}/.."
+    ovjBuildDir="$(pwd)"
+fi
+
+# which dvd dir to use - should always be OVJ for now...
+case "${OVJ_CONSOLE}" in
+    inova|mercplus|g2000)                   SUFX=OVJMI ;;
+    propulse|mr400|mr400dd2|vnmrs|vnmrsdd2) SUFX=OVJ   ;;
+    *)
+        log_error "unrecognized OVJ_CONSOLE: ${OVJ_CONSOLE}"
+        usage
+        ;;
+esac
+
+    # Get the username of the vnmr user
+if [ "$(uname -s)" = Darwin ]; then
+    VNMRUSER=${USER}
+else
+    VNMRUSER=vnmr1
+fi
 
 # verify ovjBuildDir and that build completed
 if ! [ -f "${ovjBuildDir}/vnmr/adm/sha1/sha1chklistFiles.txt" ]; then
@@ -426,11 +436,12 @@ for ACTION in $ACTIONS ; do
         # it. Then, follow the instructions in the README file.
 
         # Put the ovj_qa directory in the ~vnmr1/vnmrsys directory.
-        log_cmd sudo -u vnmr1 cp -r "${ovjBuildDir}/OpenVnmrJ/src/vjqa/ovj_qa" ~vnmr1/vnmrsys/
+        log_cmd sudo -u $VNMRUSER cp -r "${ovjBuildDir}/OpenVnmrJ/src/vjqa/ovj_qa" ~vnmr1/vnmrsys/
 
-        for user in vnmr1 testuser ; do
-            vnmruser="/home/$user/vnmrsys"
-
+        for user in $VNMRUSER testuser ; do
+            vnmruser=$(homedir "$user")/vnmrsys
+            if [ ! -d "$vnmruser" ]; then continue ; fi
+            
             # Enable appdirs
             # /home/vnmr1/vnmrsys/ovj_qa/ovjtest and
             # /home/vnmr1/vnmrsys/ovj_qa/OVJQA
