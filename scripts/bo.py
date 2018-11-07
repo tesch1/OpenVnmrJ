@@ -49,7 +49,7 @@ if 'optinc_once' not in globals():
         gsl_default = False
 
     # macos has some different defaults
-    if sys.platform == 'Darwin':
+    if sys.platform == 'darwin':
         defjava = 'system'
     else:
         defjava = 'ovjtools'
@@ -168,6 +168,8 @@ if 'optinc_once' not in globals():
             Exit(1)
         env.PrependENVPath('PATH', javaBinDir)
         env.Replace(JAR = os.path.join(javaBinDir, 'jar'))
+    # fyi
+    env.Execute('javac -version')
 
     #
     # Setup scons progress indication
