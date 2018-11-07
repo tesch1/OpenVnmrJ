@@ -1,9 +1,10 @@
-# @(#)makevnmrj 5.33 09/07/06 Copyright (c)1991-2006 Varian, Inc.
 #
-# Varian, Inc. All Rights Reserved. 
-# This software contains proprietary and confidential information of
-# Varian, Inc. and its contributors.  Use, disclosure and reproduction
-# is prohibited without prior consent.
+# Copyright (C) 2015  University of Oregon
+#
+# You may distribute under the terms of either the GNU General Public
+# License or the Apache License, as specified in the LICENSE file.
+#
+# For more information, see the LICENSE file.
 #
 
 SHELL = /bin/sh
@@ -51,4 +52,6 @@ Buildclass: $(J_CLASS)
 	@echo
 
 $(J_CLASS):
+	echo $$PATH
+	which javac
 	(umask 2; javac -J-mx128m -Xlint:unchecked -deprecation -classpath $(CLASS_PATH) $(@:.class=.java))

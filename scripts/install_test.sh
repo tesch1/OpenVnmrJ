@@ -203,12 +203,18 @@ vnmr_cmd() {
 is_ovj_installed() {
     # does ovj appear to be installed already?
     # todo: could check more thoroughly!
-    [ -d /vnmr ] && [ -d /usr/varian ] && \
-        [ -d "${OVJ_HOME}/${OVJ_VERSION}" ] && \
-        [ -d ~vnmr1 ] && \
-        [ -d ~testuser ] && \
-        getent passwd testuser && \
-        getent passwd vnmr1 > /dev/null 2>&1
+    if [ "$(uname -s)" = Darwin ]; then
+        [ -d /vnmr ] \
+            > /dev/null 2>&1
+    else
+        [ -d /vnmr ] && [ -d /usr/varian ] && \
+            [ -d "${OVJ_HOME}/${OVJ_VERSION}" ] && \
+            [ -d ~vnmr1 ] && \
+            [ -d ~testuser ] && \
+            getent passwd testuser && \
+            getent passwd vnmr1 \
+                   > /dev/null 2>&1
+    fi
 }
 
 unix_install() {

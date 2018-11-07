@@ -8,24 +8,26 @@ cwd = os.getcwd()
 execfile(os.path.join(cwd, os.pardir, os.pardir, 'scripts', 'buildoptions.py'))
 ovjtools = bo.OVJ_TOOLS
 
-javaBinDir = os.path.join(ovjtools, 'java', 'bin')
+# get the envirionment -- has PATH set correctly to pickup javac/jar
+env = boEnv.Clone()
 
-# get the envirionment
-env = Environment(ENV = {'JAVA_HOME' : javaBinDir,
-                         'PATH' : javaBinDir + ':' + os.environ['PATH']})
+if GetOption('clean'):
+   # cleanup
+   env.Execute('cd vjunit && make -f makevjunit clean')
+   env.Execute('cd VJQA/src && make -f makexmlcheck clean')
+else:
+   # build
+   env.Execute('cd vjunit && make -f makevjunit')
+   env.Execute('cd VJQA/src && make -f makexmlcheck')
 
-env.Execute('cd vjunit && make -f makevjunit')
-env.Execute('cd VJQA/src && make -f makexmlcheck')
+   Execute('rm -rf ovj_qa')
+   path = os.path.join(cwd, 'ovj_qa')
+   Execute(Mkdir(path))
 
-Execute('rm -rf ovj_qa')
-path = os.path.join(cwd, 'ovj_qa')
-if not os.path.exists(path):
-   os.makedirs(path)
-
-Execute('cp -r VJQA ovj_qa/OVJQA')
-Execute('rm -rf ovj_qa/OVJQA/src')
-Execute('rm -f ovj_qa/OVJQA/bin/lib/vjunit.jar')
-Execute('cp vjunit/vjunit.jar ovj_qa/OVJQA/bin/lib/')
-Execute('rm -f ovj_qa/OVJQA/java/*')
-Execute('cp VJQA/src/XmlTest.jar VJQA/src/*.class ovj_qa/OVJQA/java/')
-Execute('cp -r vjtest ovj_qa/ovjtest')
+   Execute('cp -r VJQA ovj_qa/OVJQA')
+   Execute('rm -rf ovj_qa/OVJQA/src')
+   Execute('rm -f ovj_qa/OVJQA/bin/lib/vjunit.jar')
+   Execute('cp vjunit/vjunit.jar ovj_qa/OVJQA/bin/lib/')
+   Execute('rm -f ovj_qa/OVJQA/java/*')
+   Execute('cp VJQA/src/XmlTest.jar VJQA/src/*.class ovj_qa/OVJQA/java/')
+   Execute('cp -r vjtest ovj_qa/ovjtest')

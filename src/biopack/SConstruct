@@ -5,7 +5,6 @@ import sys
 import glob
 import shutil
 import myShutil # for better copytree()
-import myShutilsym
 
 # we need to specify an absolute path so this SConstruct file
 # can be called from any other SConstruct file
@@ -27,8 +26,8 @@ biopackDirList = [ 'bin',
 vnmrBiopackDirList =  ['wavelib']
 
 
-vnmrBiopackPath = os.path.join(cwd,os.pardir,os.pardir,os.pardir,'console','ddr')
-ivnmrBiopackPath = os.path.join(cwd,os.pardir,os.pardir,os.pardir,'console','inova')
+vnmrBiopackPath = os.path.join(bo.prefix,'console','ddr')
+ivnmrBiopackPath = os.path.join(bo.prefix,'console','inova')
 # Alternative path if not installable option
 # vnmrBiopackPath = os.path.join(cwd,os.pardir,os.pardir,os.pardir,'options','standard','Biopack')
 #for sure copy it to options/standard/biopack
@@ -49,6 +48,7 @@ for i in biopackDirList:
 for i in vnmrBiopackDirList:
        myShutil.copytree(i,vnmrBiopackPath,symlinks = False)
        myShutil.copytree(i,ivnmrBiopackPath,symlinks = False)
+
 Execute('chmod 644 ' + standardBiopackPath + '/maclib/*')
 Execute('chmod 644 ' + standardBiopackPath + '/manual/*')
 Execute('chmod 644 ' + standardBiopackPath + '/psg/*')

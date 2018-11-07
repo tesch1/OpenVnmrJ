@@ -22,10 +22,13 @@ from SCons.Script import *
 #  env        - SCons environment with the build options
 #               parsed from config.py and the command-line
 #
+def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
 # bo module
 if 'optinc_once' not in globals():
     print("******************** ONCE ***********************")
+    EnsureSConsVersion(2,0)
 
     # the directory of bo.py
     bodir = os.path.dirname(__file__)
@@ -33,6 +36,10 @@ if 'optinc_once' not in globals():
     # load the customization file
     cmdline = Variables(os.path.join(bodir, os.path.pardir, 'custom.py'))
 
+    #
+    # Determine some default values for the build variables
+    #
+    
     # check if libgsl is available (should maybe check for header files instead)
     if (os.path.exists(os.path.join('/usr','lib','libgsl.so')) or
         os.path.exists(os.path.join('/usr','lib64','libgsl.so')) or
@@ -40,6 +47,12 @@ if 'optinc_once' not in globals():
         gsl_default = True
     else:
         gsl_default = False
+
+    # macos has some different defaults
+    if sys.platform == 'Darwin':
+        defjava = 'system'
+    else:
+        defjava = 'ovjtools'
 
     # command line variables
     cmdline.AddVariables(
@@ -61,6 +74,8 @@ if 'optinc_once' not in globals():
         BoolVariable('Gxyz', '', False),
         BoolVariable('IMAGE', '', False),
         BoolVariable('INOVA', '', False),
+        ('JAVA_HOME',
+         'Select java compiler: "ovjtools|system|<JAVA_HOME path>"', defjava),
         BoolVariable('jaccount_O', '', False),
         BoolVariable('JCP', '', False),
         BoolVariable('JMOL', '', False),
@@ -95,6 +110,7 @@ if 'optinc_once' not in globals():
     global env
     env = Environment(variables = cmdline)
     Help(cmdline.GenerateHelpText(env))
+    conf = Configure(env)
 
     #
     # bo.prefix - installation prefix, where to build the dvd image
@@ -120,15 +136,47 @@ if 'optinc_once' not in globals():
         sys.exit(1)
 
     #
+    # Setup default Java Environment
+    #
+    global javaBinDir
+    if env['JAVA_HOME'] == 'ovjtools':
+        # make sure javac is available in the ovjtools java dir
+        javaBinDir = os.path.join(OVJ_TOOLS, 'java', 'bin')
+        if not is_exe(os.path.join(javaBinDir, 'javac')):
+            print "Java compiler 'javac' not found in OVJ_TOOLS/java/bin"
+            Exit(1)
+        env.PrependENVPath('PATH', javaBinDir)
+        env.Replace(JAR = os.path.join(javaBinDir, 'jar'))
+
+    elif env['JAVA_HOME'] == 'system':
+        # dont need to do anything, just make sure javac is available
+        javaBinDir = conf.CheckProg('javac')
+        if not javaBinDir:
+            print "Unable to find system java compiler 'javac'"
+            Exit(1)
+        javaBinDir = os.path.dirname(javaBinDir)
+
+    else:
+        # make sure javac is available in path given
+        if os.path.isdir(env['JAVA_HOME']):
+            javaBinDir = env['JAVA_HOME']
+            if not is_exe(os.path.join(javaBinDir, 'javac')):
+                print "Invalid 'JAVA_HOME' path specified: javac not found"
+                Exit(1)
+        else:
+            print "Invalid 'JAVA_HOME' path specified: not a directory"
+            Exit(1)
+        env.PrependENVPath('PATH', javaBinDir)
+        env.Replace(JAR = os.path.join(javaBinDir, 'jar'))
+
+    #
     # Setup scons progress indication
     #
     if env['progress']:
         #Progress(['-\r', '\\\r', '|\r', '/\r'], interval=1) # spinny cursor
         Progress('Evaluating $TARGET\n')
 
-    #
-    # TODO: javaPath, javaBin, jarBin, ...
-    #
+    env = conf.Finish()
     
     # I'm not sure if this is needed
     optinc_once = True
