@@ -108,7 +108,7 @@ cmdspin () {
     while : ; do
         sleep 1;
         sp=${sp#?}${sp%???}
-        if [ -t 3 ]; then printf '\b%.1s' "$sp" >&3 ; fi
+        if [ -t 3 ]; then printf '%.1s\b' "$sp" >&3 ; fi
     done &
     SPINNER_PID=$!
     # Kill the spinner if we die prematurely
@@ -119,7 +119,7 @@ cmdspin () {
     # Kill the loop and unset the EXIT trap
     kill -PIPE $SPINNER_PID
     trap " " EXIT
-    if [ -t 3 ]; then printf '\b.\n' >&3 ; fi
+    if [ -t 3 ]; then printf '.\n' >&3 ; fi
     log_info "Cmd finished $(date), returned: $retval"
     return $retval
 }
